@@ -10,7 +10,7 @@ class FileEntry {
     void print(WINDOW* win, int row, bool selected) const;
     bool is_directory();
     std::filesystem::path get_path();
-    std::string get_name(); 
+    const std::string get_name() const; 
 
   private:
     std::string name;

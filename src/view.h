@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ncurses.h>
+#include <memory>
 #include "panel_view.h"
 #include "panel.h"
 #include "command_bar.h"
@@ -14,5 +15,5 @@ void draw_panels();
 CommandBar& get_command_bar(int active_panel);
 
   private:
-Panel_view panels[2];
+std::unique_ptr<Panel_view> panels[2];
 };

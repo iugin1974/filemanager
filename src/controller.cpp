@@ -4,79 +4,142 @@
 #include "command_bar.h"
 #include "command.h"
 
+// ---------------------------------------------------------------------------
+// Costruttore
+// ---------------------------------------------------------------------------
+
 Controller::Controller(View& view) : view(view) {
-  panels[0].reload();
-  panels[1].reload();
-  panels[0].set_active(true);
-  view.init_panels(&panels[0], &panels[1]);
+    panels[0].reload();
+    panels[1].reload();
+    panels[0].set_active(true);
+    view.init_panels(&panels[0], &panels[1]);
 }
 
-void Controller::handle_key(int ch) {
-  switch (ch) {
-    case KEY_UP:
-      panels[get_active_panel()].move_up();
-      break;
-    case KEY_DOWN:
-      panels[get_active_panel()].move_down();
-      break;
-    case KEY_LEFT:
-      go_up();
-      break;
-    case ':': {
-		std::string cmd = get_command();
-		evaluate_command(cmd);
-		break;
-	      }
-    case 9: // TAB
-	      change_active_panel();
-	      break;
-    case KEY_ENTER:
-    case 10:
-    case 13:
-	      enter_pressed(panels[get_active_panel()].get_selected_index());
-	      break;
-    default:
-	      break;
-  }
-  view.draw_panels();
-}
+// ---------------------------------------------------------------------------
+// Helpers privati
+// ---------------------------------------------------------------------------
 
-void Controller::enter_pressed(int selected_line) {
-  auto& panel = panels[get_active_panel()];
-  FileEntry file_entry =  panel.get_file(selected_line);
-  std::filesystem::path path = file_entry.get_path();
-  if (file_entry.is_directory()) {
-    panel.change_dir(path);
-    view.draw_panels(); 
-  }
-}
-
-void Controller::go_up() {
-  auto& panel = panels[get_active_panel()];
-  bool ok = panel.go_up();
-  if (!ok) return;
-  view.draw_panels();
-}
-
-std::string Controller::get_command() {
-  auto& cb = view.get_command_bar(get_active_panel());
-  return cb.get_command();
-}
-
-void Controller::evaluate_command(std::string cmd) {
-  Command c;
-  Command::Action command = c.parse_command(cmd);
-  if (command == Command::Action::OpenPanel) {
-  }
-}
-
-int Controller::get_active_panel() {
-  if (panels[0].is_active()) return 0;
-  return 1;
+int Controller::get_active_panel() const {
+    return panels[0].is_active() ? 0 : 1;
 }
 
 void Controller::change_active_panel() {
-  for (int i = 0; i < 2; i++) {
-    panels[i].set_active(!panels[i].is_active());
+    int active = get_active_panel();
+    panels[active].set_active(false);
+    panels[1 - active].set_active(true);
+}
+
+// Esegue fn su entrambi i panel (sync_mode) o solo su quello attivo.
+// fn riceve (Panel&, int panel_index).
+template <typename Fn>
+void Controller::for_active_panels(Fn fn) {
+    if (sync_mode) {
+        for (int i = 0; i < 2; ++i)
+            fn(panels[i], i);
+    } else {
+        int i = get_active_panel();
+        fn(panels[i], i);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Input
+// ---------------------------------------------------------------------------
+
+void Controller::handle_key(int ch) {
+    switch (ch) {
+        case KEY_UP:
+            for_active_panels([](Panel& p, int) { p.move_up(); });
+            break;
+
+        case KEY_DOWN:
+            for_active_panels([](Panel& p, int) { p.move_down(); });
+            break;
+
+        case KEY_LEFT:
+            go_up();
+            break;
+
+        case KEY_ENTER:
+        case 10:
+        case 13:
+            for_active_panels([this](Panel& p, int i) {
+                enter_pressed(p.get_selected_index(), i);
+            });
+            break;
+
+        case 9: // TAB
+            change_active_panel();
+            break;
+
+        case ':': {
+            std::string cmd = get_command();
+            evaluate_command(cmd);
+            break;
+        }
+
+        default:
+            break;
+    }
+
+    view.draw_panels();
+}
+
+// ---------------------------------------------------------------------------
+// Azioni
+// ---------------------------------------------------------------------------
+
+void Controller::enter_pressed(int selected_line, int panel_index) {
+    Panel& panel = panels[panel_index];
+    FileEntry entry = panel.get_file(selected_line);
+
+    if (entry.is_directory()) {
+        panel.change_dir(entry.get_path());
+        view.draw_panels();
+    }
+}
+
+void Controller::go_up() {
+    bool moved = false;
+
+    for_active_panels([&moved](Panel& p, int) {
+        bool ok = p.go_up();
+        moved = moved || ok;
+    });
+
+    if (moved)
+        view.draw_panels();
+}
+
+// ---------------------------------------------------------------------------
+// Comandi
+// ---------------------------------------------------------------------------
+
+std::string Controller::get_command() {
+    return view.get_command_bar(get_active_panel()).get_command();
+}
+
+void Controller::evaluate_command(const std::string& cmd) {
+  Command command(this);
+command.execute(cmd);
+
+
   }
+
+void Controller::set_sync(bool sync) {
+if (!sync) {
+sync_mode = false;
+return;
+}
+// sync on può solo essere attivato se i due cursori sono su un file con lo stesso nome.
+// se non esiste, non si attiva
+std::string n1 = panels[0].get_current_file();
+int index = panels[1].contains(n1);
+if (index == -1) {
+sync_mode = false;
+return;
+}
+
+panels[1].set_selected_index(index);
+if (sync) sync_mode = true;
 }

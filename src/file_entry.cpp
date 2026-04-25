@@ -22,7 +22,7 @@ bool FileEntry::is_directory() {
   return is_dir;
 }
 
-std::string FileEntry::get_name() {
+const std::string FileEntry::get_name() const {
   return name;
 }
 

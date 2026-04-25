@@ -1,16 +1,16 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include "controller.h"
 
 class Command {
 
   public:
-    enum class Action {
-        None,
-        OpenPanel,
-        ClosePanel
-    };
-Action parse_command(std::string cmd);
+    Command(Controller*);
+    void execute(const std::string& cmd);
   private:
-
+    std::vector<std::string> parse_command(const std::string& cmd);
+    std::vector<std::string> command;
+    Controller* controller;
 };

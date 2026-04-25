@@ -23,6 +23,14 @@ int Panel::get_selected_index() const {
   return selected_index;
 }
 
+void Panel::set_selected_index(int i) {
+selected_index = i;
+}
+
+std::string Panel::get_current_file() const {
+return file_list.at(selected_index).get_name();
+}
+
 void Panel::move_up() {
   if (selected_index > 0) selected_index--;
 }
@@ -52,10 +60,17 @@ bool Panel::go_up() {
   return false;
 }
 
-bool Panel::is_active() {
+bool Panel::is_active() const {
   return active;
 }
 
 void Panel::set_active(bool a) {
   active = a;
+}
+
+const int Panel::contains(const std::string& name) const {
+for (int i = 0; i < file_list.size(); i++) {
+if (file_list.at(i).get_name() == name) return i;
+}
+return -1;
 }

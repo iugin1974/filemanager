@@ -1,23 +1,35 @@
 #pragma once
-#include <vector>
-#include "panel.h"
 
-class View;  // forward declaration
+#include "view.h"
+#include "panel.h"
+#include <string>
+#include <array>
 
 class Controller {
   public:
-    Controller(View& view);
+    explicit Controller(View& view);
+
     void handle_key(int ch);
 
+    void set_sync(bool);
   private:
-    
-    Panel panels[2];
-    View& view;
-    int active_panel = 0;
-    void enter_pressed(int selected_line);
-    void go_up();
-    std::string get_command();
-    void evaluate_command(std::string);
-    int get_active_panel();
+    // --- Stato ---
+    View&              view;
+    std::array<Panel, 2> panels;
+    bool               sync_mode = true;
+
+    // --- Helpers ---
+    int  get_active_panel() const;
     void change_active_panel();
+
+    template <typename Fn>
+      void for_active_panels(Fn fn);
+
+    // --- Azioni ---
+    void enter_pressed(int selected_line, int panel_index);
+    void go_up();
+
+    // --- Comandi ---
+    std::string get_command();
+    void        evaluate_command(const std::string& cmd);
 };
