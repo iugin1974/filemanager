@@ -15,6 +15,7 @@ add_executable(filemanager
     src/file_entry.cpp
     src/status_bar.cpp
     src/command.cpp
+    src/command_bar.cpp
 )
 
 target_include_directories(filemanager PRIVATE ${CURSES_INCLUDE_DIR})

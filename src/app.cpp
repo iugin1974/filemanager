@@ -23,7 +23,6 @@ init_pair(8, -1, COLOR_BLUE);    // pannello attivo
 
   View view;
   Controller controller(view);
-controller.add_panel();
 
   int ch;
   while ((ch = getch()) != 'q') {

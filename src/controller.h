@@ -7,12 +7,17 @@ class View;  // forward declaration
 class Controller {
   public:
     Controller(View& view);
-    void add_panel();
     void handle_key(int ch);
+
   private:
-    std::vector<Panel> panels;
+    
+    Panel panels[2];
     View& view;
     int active_panel = 0;
     void enter_pressed(int selected_line);
     void go_up();
+    std::string get_command();
+    void evaluate_command(std::string);
+    int get_active_panel();
+    void change_active_panel();
 };

@@ -2,8 +2,8 @@
 #include <ncurses.h>
 #include <string>
 
-StatusBar::StatusBar(int y_pos, int width) {
-  win = newwin(1, width, y_pos, 0);
+StatusBar::StatusBar(int y_pos, int x_pos, int width) {
+  win = newwin(1, width, y_pos, x_pos);
   wattron(win, A_REVERSE | A_BOLD);
 }
 

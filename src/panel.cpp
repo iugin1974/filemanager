@@ -2,6 +2,10 @@
 #include <filesystem>
 #include <vector>
 
+Panel::Panel() {
+current_path = std::getenv("HOME");
+}
+
 void Panel::change_dir(const std::filesystem::path& path) {
   current_path = path;
   selected_index = 0;
@@ -46,4 +50,12 @@ bool Panel::go_up() {
     return true;
   }
   return false;
+}
+
+bool Panel::is_active() {
+  return active;
+}
+
+void Panel::set_active(bool a) {
+  active = a;
 }

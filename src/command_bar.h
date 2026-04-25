@@ -2,11 +2,13 @@
 #include <ncurses.h>
 #include <string>
 
-class StatusBar {
+class CommandBar {
   public:
-    StatusBar() : win(nullptr) {}
-    StatusBar(int y_pos, int x_pos, int width);
+    CommandBar() : win(nullptr) {}
+    CommandBar(int y_pos, int width);
+    ~CommandBar();
     void print_message(std::string);
+    std::string get_command();
     void clear();
 
   private:

@@ -1,15 +1,18 @@
 #pragma once
 
 #include <ncurses.h>
-#include <vector>
 #include "panel_view.h"
 #include "panel.h"
+#include "command_bar.h"
 
 class View {
   public:
-void draw_panels();
+    View();
+void init_panels(Panel*, Panel*);
 void add_panel(Panel& p);
+void draw_panels();
+CommandBar& get_command_bar(int active_panel);
 
   private:
-std::vector<Panel_view> panels;
+Panel_view panels[2];
 };
