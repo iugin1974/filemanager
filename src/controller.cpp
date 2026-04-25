@@ -49,11 +49,11 @@ void Controller::for_active_panels(Fn fn) {
 void Controller::handle_key(int ch) {
     switch (ch) {
         case KEY_UP:
-            for_active_panels([](Panel& p, int) { p.move_up(); });
+            move_up();
             break;
 
         case KEY_DOWN:
-            for_active_panels([](Panel& p, int) { p.move_down(); });
+            move_down();
             break;
 
         case KEY_LEFT:
@@ -109,6 +109,30 @@ void Controller::go_up() {
 
     if (moved)
         view.draw_panels();
+}
+
+void Controller::sync_move(bool up) {
+    int other = (get_active_panel() == 0) ? 1 : 0;
+    up ? panels[get_active_panel()].move_up() : panels[get_active_panel()].move_down();
+    std::string name = panels[get_active_panel()].get_current_file();
+    int index = panels[other].contains(name);
+    if (index != -1) panels[other].set_selected_index(index);
+}
+
+void Controller::move_up() {
+    if (!sync_mode) {
+        for_active_panels([](Panel& p, int) { p.move_up(); });
+        return;
+    }
+    sync_move(true);
+}
+
+void Controller::move_down() {
+    if (!sync_mode) {
+        for_active_panels([](Panel& p, int) { p.move_down(); });
+        return;
+    }
+    sync_move(false);
 }
 
 // ---------------------------------------------------------------------------

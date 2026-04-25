@@ -16,7 +16,7 @@ class Controller {
     // --- Stato ---
     View&              view;
     std::array<Panel, 2> panels;
-    bool               sync_mode = true;
+    bool               sync_mode = false;
 
     // --- Helpers ---
     int  get_active_panel() const;
@@ -28,7 +28,10 @@ class Controller {
     // --- Azioni ---
     void enter_pressed(int selected_line, int panel_index);
     void go_up();
-
+  void move_up();
+  void move_down();
+  void sync_move(bool up);
+  
     // --- Comandi ---
     std::string get_command();
     void        evaluate_command(const std::string& cmd);
