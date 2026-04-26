@@ -52,6 +52,10 @@ void Panel::show_hidden_files(bool h) {
 show_hidden = h;  
 }
 
+bool Panel::is_showing_hidden() const {
+return show_hidden;  
+}
+
 int Panel::get_selected_index() const {
   return selected_index;
 }

@@ -8,6 +8,8 @@
 #include "mkdir_operation.h"
 #include "operation.h"
 
+#define ctrl(x) ((x) & 0x1f) // definisce CTRL+H
+
 // ---------------------------------------------------------------------------
 // Costruttore
 // ---------------------------------------------------------------------------
@@ -71,7 +73,13 @@ void Controller::handle_key(int ch) {
                 enter_pressed(p.get_selected_index(), i);
             });
             break;
-            
+        case ctrl('h'): {
+            for (int i = 0; i < 2; i++) {
+                panels.at(i).show_hidden_files(!panels.at(i).is_showing_hidden());
+    panels.at(i).reload();
+        }
+    break;    
+        }
         case 9: // TAB
             change_active_panel();
             break;
