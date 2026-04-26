@@ -16,6 +16,13 @@ add_executable(filemanager
     src/status_bar.cpp
     src/command.cpp
     src/command_bar.cpp
+    src/popup.cpp
+    src/copy_operation.cpp
+    src/move_operation.cpp
+    src/delete_operation.cpp
+    src/rename_operation.cpp
+    src/mkdir_operation.cpp
+    src/operation.cpp
 )
 
 target_include_directories(filemanager PRIVATE ${CURSES_INCLUDE_DIR})
