@@ -15,6 +15,8 @@ class Controller {
   void delete_file();
   void copy_file();
   void mkdir(const std::string&);
+  void move_file(const std::string&);
+  void move_file();
   private:
     // --- Stato ---
     View&              view;

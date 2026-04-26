@@ -6,6 +6,7 @@
 #include "delete_operation.h"
 #include "copy_operation.h"
 #include "mkdir_operation.h"
+#include "move_operation.h"
 #include "operation.h"
 
 #define ctrl(x) ((x) & 0x1f) // definisce CTRL+H
@@ -19,6 +20,7 @@ Controller::Controller(View& view) : view(view) {
     panels[1].reload();
     panels[0].set_active(true);
     view.init_panels(&panels[0], &panels[1]);
+    view.draw_panels();
 }
 
 // ---------------------------------------------------------------------------
@@ -76,9 +78,9 @@ void Controller::handle_key(int ch) {
         case ctrl('h'): {
             for (int i = 0; i < 2; i++) {
                 panels.at(i).show_hidden_files(!panels.at(i).is_showing_hidden());
-    panels.at(i).reload();
-        }
-    break;    
+                panels.at(i).reload();
+            }
+            break;    
         }
         case 9: // TAB
             change_active_panel();
@@ -208,4 +210,26 @@ void Controller::mkdir(const std::string& name) {
     std::filesystem::path path = p.get_current_path();
     MkdirOperation m;
     m.execute(path / name);
+}
+
+void Controller::move_file(const std::string& name) {
+    Panel& p1 = panels[get_active_panel()];
+    if (p1.get_files().size() == 0) return;
+    
+    std::filesystem::path source = p1.get_current_file_fullpath();
+    std::filesystem::path destination;
+    
+    destination = p1.get_current_path() / name;
+    MoveOperation m;
+    m.execute(source, destination);
+}
+
+void Controller::move_file() {
+    // non posso usare std::filesystem::renamve (vedi MoveOperation)
+    // perché rename non funziona su partizioni diverse
+    // rename: Invalid cross-device link
+    // quindi lo copio prima e poi lo cancello
+copy_file();
+delete_file();
+    
 }

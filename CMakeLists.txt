@@ -5,6 +5,7 @@ project(FileManager LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_BUILD_TYPE Debug)
 
 set(SOURCES
     src/app.cpp
@@ -22,6 +23,7 @@ set(SOURCES
     src/panel_view.cpp
     src/popup.cpp
     src/rename_operation.cpp
+    src/move_operation.cpp
     src/status_bar.cpp
     src/view.cpp
 )
