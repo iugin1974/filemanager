@@ -21,10 +21,12 @@ public:
   bool is_active() const;
   void set_active(bool);
   const int contains(const std::string& name) const;
+  void show_hidden_files(bool show);
 private:
   std::filesystem::path current_path;
   std::vector<FileEntry> file_list;
   int selected_index = 0;
   bool active = false;
   void update_selected_index();
+  bool show_hidden = false;
 };

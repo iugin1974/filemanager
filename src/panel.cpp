@@ -13,11 +13,26 @@ void Panel::change_dir(const std::filesystem::path& path) {
 }
 
 void Panel::reload() {
-  file_list.clear();
-  for (auto& entry : std::filesystem::directory_iterator(current_path)) {
-    file_list.push_back(entry);
-  }
-  update_selected_index();
+    file_list.clear();
+
+    for (auto& entry : std::filesystem::directory_iterator(current_path)) {
+
+        // nome file
+        const auto name = entry.path().filename().string();
+
+        // escludi file nascosti (Linux/macOS: iniziano con '.')
+        if (!show_hidden && !name.empty() && name[0] == '.') {
+            continue;
+        }
+
+        file_list.push_back(entry);
+    }
+
+    update_selected_index();
+}
+
+void Panel::show_hidden_files(bool h) {
+show_hidden = h;  
 }
 
 int Panel::get_selected_index() const {
