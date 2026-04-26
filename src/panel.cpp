@@ -17,6 +17,7 @@ void Panel::reload() {
   for (auto& entry : std::filesystem::directory_iterator(current_path)) {
     file_list.push_back(entry);
   }
+  update_selected_index();
 }
 
 int Panel::get_selected_index() const {
@@ -27,8 +28,17 @@ void Panel::set_selected_index(int i) {
 selected_index = i;
 }
 
-std::string Panel::get_current_file() const {
+void Panel::update_selected_index() {
+if (selected_index >= file_list.size()) selected_index = file_list.size() - 1;
+if (selected_index == -1) selected_index = 0;
+}
+
+std::string Panel::get_current_file_name() const {
 return file_list.at(selected_index).get_name();
+}
+
+std::filesystem::path Panel::get_current_file_fullpath() const {
+return file_list.at(selected_index).get_path();  
 }
 
 void Panel::move_up() {

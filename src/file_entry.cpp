@@ -26,6 +26,10 @@ const std::string FileEntry::get_name() const {
   return name;
 }
 
-std::filesystem::path FileEntry::get_path() {
+std::filesystem::path FileEntry::get_path() const {
   return path;
+}
+
+const std::filesystem::path FileEntry::get_full_path() const {
+ return path / name; 
 }

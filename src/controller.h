@@ -12,6 +12,9 @@ class Controller {
     void handle_key(int ch);
 
     void set_sync(bool);
+  void delete_file();
+  void copy_file();
+  void mkdir(const std::string&);
   private:
     // --- Stato ---
     View&              view;
