@@ -1,6 +1,7 @@
 #include "panel.h"
 #include <filesystem>
 #include <vector>
+#include <algorithm>
 
 Panel::Panel() {
 current_path = std::getenv("HOME");
@@ -28,6 +29,22 @@ void Panel::reload() {
         file_list.push_back(entry);
     }
 
+    std::sort(file_list.begin(), file_list.end(), [](const auto& a, const auto& b) {
+    auto category = [](const auto& entry) {
+        const std::string name = entry.get_path().filename().string();
+        bool hidden = !name.empty() && name[0] == '.';
+        bool dir = entry.is_directory();
+        if (hidden && dir) return 0;
+        if (!hidden && dir) return 1;
+        if (hidden && !dir) return 2;
+        return 3;
+    };
+    int ca = category(a);
+    int cb = category(b);
+    if (ca != cb) return ca < cb;
+    return a.get_path().filename() < b.get_path().filename();  // alfabetico dentro la stessa categoria
+});
+    
     update_selected_index();
 }
 

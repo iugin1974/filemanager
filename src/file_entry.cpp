@@ -18,7 +18,7 @@ void FileEntry::print(WINDOW* win, int row, bool selected) const {
   wattroff(win, A_REVERSE | COLOR_PAIR(1) | A_BOLD);
 }
 
-bool FileEntry::is_directory() {
+bool FileEntry::is_directory() const {
   return is_dir;
 }
 
@@ -30,6 +30,3 @@ std::filesystem::path FileEntry::get_path() const {
   return path;
 }
 
-const std::filesystem::path FileEntry::get_full_path() const {
- return path / name; 
-}

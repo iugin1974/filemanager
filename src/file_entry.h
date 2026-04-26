@@ -8,10 +8,9 @@ class FileEntry {
   public:
     FileEntry(const std::filesystem::directory_entry& entry);
     void print(WINDOW* win, int row, bool selected) const;
-    bool is_directory();
+    bool is_directory() const;
     std::filesystem::path get_path() const;
     const std::string get_name() const; 
-    const std::filesystem::path get_full_path() const;
   private:
     std::string name;
     std::filesystem::path path;
