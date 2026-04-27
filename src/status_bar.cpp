@@ -1,25 +1,57 @@
 #include "status_bar.h"
 #include <ncurses.h>
 #include <string>
+#include <chrono>
+#include <ctime>
+#include <filesystem>
 
 StatusBar::StatusBar(int y_pos, int x_pos, int width) {
   win = newwin(1, width, y_pos, x_pos);
   wattron(win, A_REVERSE | A_BOLD);
 }
 
-void StatusBar::print_message(std::string msg) {
+void StatusBar::print_message(const FileEntry& entry) {
     werase(win);
-
     wattron(win, A_REVERSE);
-
-    // riempi tutta la riga di spazi invertiti
     whline(win, ' ', getmaxx(win));
 
-    // scrivi il messaggio sopra
-    mvwprintw(win, 0, 0, "%s", msg.c_str());
+    // Path a sinistra
+    std::string left = entry.get_path().parent_path().string();
+
+    // Dimensione in formato leggibile
+    std::string size_str;
+    if (!entry.is_directory()) {
+        auto size = std::filesystem::file_size(entry.get_path());
+        if (size < 1024)
+            size_str = std::to_string(size) + " B";
+        else if (size < 1024 * 1024)
+            size_str = std::to_string(size / 1024) + " KB";
+        else
+            size_str = std::to_string(size / (1024 * 1024)) + " MB";
+    } else {
+        size_str = "DIR";
+    }
+
+    // Data di modifica
+    auto ftime = std::filesystem::last_write_time(entry.get_path());
+    auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+        ftime - std::filesystem::file_time_type::clock::now() + std::chrono::system_clock::now()
+    );
+    std::time_t tt = std::chrono::system_clock::to_time_t(sctp);
+    std::tm* tm = std::localtime(&tt);
+    char date_buf[20];
+    std::strftime(date_buf, sizeof(date_buf), "%d.%m.%Y", tm);
+
+    // Stringa destra
+    std::string right = size_str + " - " + date_buf;
+
+    // Stampa
+    int width = getmaxx(win);
+    int right_col = width - right.size() - 1;
+    mvwprintw(win, 0, 0, "%s", left.c_str());
+    mvwprintw(win, 0, right_col, "%s", right.c_str());
 
     wattroff(win, A_REVERSE);
-
     wrefresh(win);
 }
 

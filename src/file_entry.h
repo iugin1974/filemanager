@@ -12,8 +12,5 @@ class FileEntry {
     std::filesystem::path get_path() const;
     const std::string get_name() const; 
   private:
-    std::string name;
-    std::filesystem::path path;
-    bool is_dir = false;
-    bool is_selected = false;
+    std::filesystem::directory_entry entry;
 };

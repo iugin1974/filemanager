@@ -52,6 +52,10 @@ FileEntry& Panel::get_file_at(int i) {
 return file_list.at(i);  
 }
 
+FileEntry& Panel::get_current_file() {
+ return get_file_at(selected_index); 
+}
+
 void Panel::show_hidden_files(bool h) {
 show_hidden = h;  
 }

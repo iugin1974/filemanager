@@ -24,6 +24,7 @@ public:
   void show_hidden_files(bool show);
   bool is_showing_hidden() const;
   FileEntry& get_file_at(int i);
+  FileEntry& get_current_file();
 private:
   std::filesystem::path current_path;
   std::vector<FileEntry> file_list;
