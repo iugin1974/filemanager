@@ -54,7 +54,7 @@ void Controller::for_active_panels(Fn fn) {
 // Input
 // ---------------------------------------------------------------------------
 
-void Controller::handle_key(int ch) {
+bool Controller::handle_key(int ch) {
     switch (ch) {
         case KEY_UP:
             move_up();
@@ -93,12 +93,17 @@ void Controller::handle_key(int ch) {
         }
         
         default:
+            jump_to_file(ch);
             break;
     }
     
     view.draw_panels();
+    return exit;
 }
 
+void Controller::exit_status() {
+    exit = true;
+}
 // ---------------------------------------------------------------------------
 // Azioni
 // ---------------------------------------------------------------------------
@@ -149,6 +154,28 @@ void Controller::move_down() {
     sync_move(false);
 }
 
+void Controller::jump_to_file(char ch) {
+    Panel& p = panels.at(get_active_panel());
+    for (int i = p.get_selected_index() + 1; i < p.get_files().size(); i++) {
+        std::string name = p.get_file_at(i).get_name();
+        if (name[0] == ch) {
+            p.set_selected_index(i);
+            p.reload();
+            view.draw_panels();
+            return;
+        }
+    }
+
+    for (int i = 0; i < p.get_selected_index(); i++) {
+        std::string name = p.get_file_at(i).get_name();
+        if (name[0] == ch) {
+            p.set_selected_index(i);
+            p.reload();
+            view.draw_panels();
+            return;
+        }
+    }
+}
 // ---------------------------------------------------------------------------
 // Comandi
 // ---------------------------------------------------------------------------
@@ -229,7 +256,7 @@ void Controller::move_file() {
     // perché rename non funziona su partizioni diverse
     // rename: Invalid cross-device link
     // quindi lo copio prima e poi lo cancello
-copy_file();
-delete_file();
+    copy_file();
+    delete_file();
     
 }

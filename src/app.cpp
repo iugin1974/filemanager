@@ -25,8 +25,9 @@ init_pair(8, -1, COLOR_BLUE);    // pannello attivo
   Controller controller(view);
 
   int ch;
-  while ((ch = getch()) != 'q') {
-    controller.handle_key(ch);
+  while (ch = getch()) {
+   bool exit = controller.handle_key(ch);
+   if (exit) break;
   }
   endwin();
 }

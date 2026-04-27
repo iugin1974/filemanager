@@ -18,6 +18,7 @@ std::string CommandBar::get_command() {
     std::string input;
 
     werase(win);
+    mvwprintw(win, 0, 0, ":");
     wrefresh(win);
 
     int ch;
@@ -33,7 +34,7 @@ std::string CommandBar::get_command() {
         }
 
         werase(win);
-        mvwprintw(win, 0, 0, "%s", input.c_str());
+        mvwprintw(win, 0, 1, "%s", input.c_str());
         wrefresh(win);
     }
 

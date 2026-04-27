@@ -15,7 +15,8 @@ void Command::execute(const std::string& cmd) {
     std::string name = tokens[0];
     std::vector<std::string> args(tokens.begin() + 1, tokens.end());
     
-    if (name == "sync") {
+    if (name == "q") controller->exit_status();
+    else if (name == "sync") {
         if (args[0] == "on") controller->set_sync(true);
         else if (args[0] == "off") controller->set_sync(false);
     }

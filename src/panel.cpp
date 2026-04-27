@@ -48,6 +48,10 @@ void Panel::reload() {
     update_selected_index();
 }
 
+FileEntry& Panel::get_file_at(int i) {
+return file_list.at(i);  
+}
+
 void Panel::show_hidden_files(bool h) {
 show_hidden = h;  
 }

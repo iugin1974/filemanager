@@ -9,7 +9,7 @@ class Controller {
   public:
     explicit Controller(View& view);
 
-    void handle_key(int ch);
+    bool handle_key(int ch);
 
     void set_sync(bool);
   void delete_file();
@@ -17,7 +17,9 @@ class Controller {
   void mkdir(const std::string&);
   void move_file(const std::string&);
   void move_file();
+  void exit_status();
   private:
+    bool exit = false;
     // --- Stato ---
     View&              view;
     std::array<Panel, 2> panels;
@@ -26,7 +28,7 @@ class Controller {
     // --- Helpers ---
     int  get_active_panel() const;
     void change_active_panel();
-
+    void jump_to_file(char ch);
     template <typename Fn>
       void for_active_panels(Fn fn);
 

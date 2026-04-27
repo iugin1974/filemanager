@@ -23,6 +23,7 @@ public:
   const int contains(const std::string& name) const;
   void show_hidden_files(bool show);
   bool is_showing_hidden() const;
+  FileEntry& get_file_at(int i);
 private:
   std::filesystem::path current_path;
   std::vector<FileEntry> file_list;
