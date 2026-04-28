@@ -2,6 +2,7 @@
 
 #include "operation.h"
 #include <filesystem>
+#include <string>
 
 class CopyOperation : public Operation {
 public:
@@ -10,5 +11,7 @@ public:
                  const std::filesystem::path& path2) override;
                  
 private:
-bool show_popup();
+bool show_popup(const std::filesystem::path& source,
+                                const std::filesystem::path& dest);
+std::string file_info(const std::filesystem::path& p);
 };
