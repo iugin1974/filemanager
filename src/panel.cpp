@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <vector>
 #include <algorithm>
+#include <stack>
 
 Panel::Panel() {
 current_path = std::getenv("HOME");
@@ -106,8 +107,19 @@ const FileEntry& Panel::get_file(int i) const {
 }
 
 bool Panel::go_up() {
-  if (current_path.has_parent_path()) {
+  if (current_path != current_path.parent_path()) {
+    path_history.push(current_path);
     current_path = current_path.parent_path();
+    change_dir(current_path);
+    return true;
+  }
+  return false;
+}
+
+bool Panel::go_back() {
+  if (path_history.size() > 0) {
+    current_path = path_history.top();
+    path_history.pop();
     change_dir(current_path);
     return true;
   }

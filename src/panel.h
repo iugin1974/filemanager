@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <vector>
 #include "file_entry.h"
+#include <stack>
 
 class Panel {
 public:
@@ -18,6 +19,7 @@ public:
   void move_down();
   const FileEntry& get_file(int) const;
   bool go_up();
+  bool go_back();
   bool is_active() const;
   void set_active(bool);
   const int contains(const std::string& name) const;
@@ -26,6 +28,7 @@ public:
   FileEntry& get_file_at(int i);
   FileEntry& get_current_file();
 private:
+  std::stack<std::filesystem::path> path_history;
   std::filesystem::path current_path;
   std::vector<FileEntry> file_list;
   int selected_index = 0;

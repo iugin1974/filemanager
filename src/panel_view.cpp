@@ -33,7 +33,12 @@ void Panel_view::draw() {
     bool is_selected = (i + offset == selected);
     files[i + offset].print(win, i, is_selected);
   }
-  status_bar.print_message(panel->get_current_file());
+  
+  if (panel->get_files().size() > 0)
+    status_bar.print_message(panel->get_current_path(), panel->get_current_file());
+  else
+    status_bar.print_message(panel->get_current_path());
+    
   // disegna i bordi
  draw_border(width, height); 
   wrefresh(win);

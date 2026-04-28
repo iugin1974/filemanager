@@ -10,24 +10,39 @@ StatusBar::StatusBar(int y_pos, int x_pos, int width) {
   wattron(win, A_REVERSE | A_BOLD);
 }
 
-void StatusBar::print_message(const FileEntry& entry) {
+void StatusBar::print_message(const std::filesystem::path& current_path) {
+        werase(win);
+    wattron(win, A_REVERSE);
+    whline(win, ' ', getmaxx(win));
+    mvwprintw(win, 0, 0, "%s", current_path.string().c_str());
+    wattroff(win, A_REVERSE);
+    wrefresh(win);
+}
+
+void StatusBar::print_message(const std::filesystem::path& current_path, const FileEntry& entry) {
     werase(win);
     wattron(win, A_REVERSE);
     whline(win, ' ', getmaxx(win));
 
     // Path a sinistra
-    std::string left = entry.get_path().parent_path().string();
+    std::string left = current_path.string();
 
     // Dimensione in formato leggibile
     std::string size_str;
+    std::uintmax_t size = 0;
     if (!entry.is_directory()) {
-        auto size = std::filesystem::file_size(entry.get_path());
+        
+        try {
+        size = std::filesystem::file_size(entry.get_path()); // questo perché le directory su cui non ho diritti, non possono venire lette.
         if (size < 1024)
             size_str = std::to_string(size) + " B";
         else if (size < 1024 * 1024)
             size_str = std::to_string(size / 1024) + " KB";
         else
             size_str = std::to_string(size / (1024 * 1024)) + " MB";
+        } catch (const std::filesystem::filesystem_error e) {
+         size = 0;   
+        }
     } else {
         size_str = "DIR";
     }

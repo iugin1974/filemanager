@@ -4,6 +4,7 @@
 #include "panel.h"
 #include <string>
 #include <array>
+#include <queue>
 
 class Controller {
   public:
@@ -35,6 +36,7 @@ class Controller {
     // --- Azioni ---
     void enter_pressed(int selected_line, int panel_index);
     void go_up();
+    void go_back();
   void move_up();
   void move_down();
   void sync_move(bool up);

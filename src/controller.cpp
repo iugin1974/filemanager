@@ -68,6 +68,10 @@ bool Controller::handle_key(int ch) {
             go_up();
             break;
             
+        case KEY_RIGHT:
+            go_back();
+            break;
+            
         case KEY_ENTER:
         case 10:
         case 13:
@@ -110,6 +114,7 @@ void Controller::exit_status() {
 
 void Controller::enter_pressed(int selected_line, int panel_index) {
     Panel& panel = panels[panel_index];
+    if (panel.get_files().size() == 0) return;
     FileEntry entry = panel.get_file(selected_line);
     
     if (entry.is_directory()) {
@@ -123,6 +128,18 @@ void Controller::go_up() {
     
     for_active_panels([&moved](Panel& p, int) {
         bool ok = p.go_up();
+        moved = moved || ok;
+    });
+    
+    if (moved)
+        view.draw_panels();
+}
+
+void Controller::go_back() {
+ bool moved = false;
+ 
+    for_active_panels([&moved](Panel& p, int) {
+        bool ok = p.go_back();
         moved = moved || ok;
     });
     
