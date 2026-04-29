@@ -13,12 +13,14 @@ class Controller {
     bool handle_key(int ch);
 
     void set_sync(bool);
-  void delete_file();
+  void delete_file(bool silent);
   void copy_file();
   void mkdir(const std::string&);
   void move_file(const std::string&);
   void move_file();
+  void touch(const std::string&);
   void exit_status();
+  void reload_panels();
   private:
     bool exit = false;
     // --- Stato ---
@@ -44,4 +46,8 @@ class Controller {
     // --- Comandi ---
     std::string get_command();
     void        evaluate_command(const std::string& cmd);
+    bool show_file_exists_popup(const std::filesystem::path& source,
+                                const std::filesystem::path& dest);
+    bool show_delete_file_popup(const std::filesystem::path& path);
+    std::string file_info(const std::filesystem::path& p);
 };

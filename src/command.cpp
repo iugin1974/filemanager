@@ -20,12 +20,17 @@ void Command::execute(const std::string& cmd) {
         if (args[0] == "on") controller->set_sync(true);
         else if (args[0] == "off") controller->set_sync(false);
     }
-    else if (name == "rm") controller->delete_file();
+    else if (name == "rm") controller->delete_file(false);
     else if (name == "cp") controller->copy_file();
     else if (name == "mkdir" && args.size() > 0) {
         for (int i = 0; i < args.size(); i++) {
             controller->mkdir(args[i]); 
         }
+    }
+    else if (name == "touch" && args.size() > 0) {
+               for (int i = 0; i < args.size(); i++) {
+            controller->touch(args[i]); 
+        } 
     }
     else if (name == "mv" && args.size() == 0)
         controller->move_file();

@@ -3,11 +3,15 @@
 #include "panel.h"
 #include "command_bar.h"
 #include "command.h"
+#include "popup.h"
 #include "delete_operation.h"
 #include "copy_operation.h"
 #include "mkdir_operation.h"
 #include "move_operation.h"
+#include "touch_operation.h"
 #include "operation.h"
+#include "file_guard.h"
+#include <unistd.h>
 
 #define ctrl(x) ((x) & 0x1f) // definisce CTRL+H
 
@@ -16,8 +20,7 @@
 // ---------------------------------------------------------------------------
 
 Controller::Controller(View& view) : view(view) {
-    panels[0].reload();
-    panels[1].reload();
+    reload_panels();
     panels[0].set_active(true);
     view.init_panels(&panels[0], &panels[1]);
     view.draw_panels();
@@ -95,7 +98,9 @@ bool Controller::handle_key(int ch) {
             evaluate_command(cmd);
             break;
         }
-        
+        case '$': {
+         reload_panels();   
+        }
         default:
             jump_to_file(ch);
             break;
@@ -112,6 +117,11 @@ void Controller::exit_status() {
 // Azioni
 // ---------------------------------------------------------------------------
 
+void Controller::reload_panels() {
+    panels[0].reload();
+    panels[1].reload();
+}
+
 void Controller::enter_pressed(int selected_line, int panel_index) {
     Panel& panel = panels[panel_index];
     if (panel.get_files().size() == 0) return;
@@ -120,6 +130,14 @@ void Controller::enter_pressed(int selected_line, int panel_index) {
     if (entry.is_directory()) {
         panel.change_dir(entry.get_path());
         view.draw_panels();
+    } else {
+        pid_t new_process = fork();
+        if (new_process == 0) {
+        execlp("xdg-open", "xdg-open", entry.get_path().string().c_str(), nullptr);
+        _exit(1);
+        } else if (new_process < 0) {
+         Popup::show({"Error: cannot open file"}, {"[OK]"});   
+        }
     }
 }
 
@@ -227,12 +245,16 @@ void Controller::set_sync(bool sync) {
     if (sync) sync_mode = true;
 }
 
-void Controller::delete_file() {
+void Controller::delete_file(bool silent) {
     Panel& p = panels[get_active_panel()];
     if (p.get_files().size() == 0) return;
     const std::filesystem::path& f = p.get_current_file_fullpath();
+    bool ok = true;
+    if (!silent) ok = FileGuard::confirm_delete(f);
+    if (ok) {
     DeleteOperation d;
     d.execute(f);
+    }
 }
 
 void Controller::copy_file() {
@@ -245,8 +267,13 @@ void Controller::copy_file() {
     std::filesystem::path destination =
     p2.get_current_path() / p1.get_current_file_name();
     
+    bool ok = true;
+    if (std::filesystem::exists(destination))
+    ok = FileGuard::confirm_overwrite(source, destination);
+    if (ok) {
     CopyOperation c;
     c.execute(source, destination);
+    }
 }
 
 void Controller::mkdir(const std::string& name) {
@@ -274,6 +301,12 @@ void Controller::move_file() {
     // rename: Invalid cross-device link
     // quindi lo copio prima e poi lo cancello
     copy_file();
-    delete_file();
-    
+    delete_file(true);
+}
+
+void Controller::touch(const std::string& name) {
+    Panel& p = panels[get_active_panel()];
+    std::filesystem::path path = p.get_current_path();
+    TouchOperation m;
+    m.execute(path / name);
 }

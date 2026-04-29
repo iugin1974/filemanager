@@ -8,35 +8,42 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_BUILD_TYPE Debug)
 
 set(SOURCES
-    src/app.cpp
-    src/command_bar.cpp
-    src/command.cpp
-    src/controller.cpp
-    src/copy_operation.cpp
-    src/delete_operation.cpp
-    src/file_entry.cpp
-    src/filesystem.cpp
-    src/main.cpp
-    src/mkdir_operation.cpp
-    src/move_operation.cpp
-    src/panel.cpp
-    src/panel_view.cpp
-    src/popup.cpp
-    src/rename_operation.cpp
-    src/move_operation.cpp
-    src/status_bar.cpp
-    src/view.cpp
+  src/app.cpp
+  src/command_bar.cpp
+  src/command.cpp
+  src/controller.cpp
+  src/copy_operation.cpp
+  src/delete_operation.cpp
+  src/file_entry.cpp
+  src/filesystem.cpp
+  src/main.cpp
+  src/mkdir_operation.cpp
+  src/move_operation.cpp
+  src/panel.cpp
+  src/panel_view.cpp
+  src/popup.cpp
+  src/rename_operation.cpp
+  src/move_operation.cpp
+  src/touch_operation.cpp
+  src/status_bar.cpp
+  src/view.cpp
+  src/file_guard.cpp
 )
 
-add_executable(filemanager ${SOURCES})
+add_executable(fm ${SOURCES})
 
 find_package(Curses REQUIRED)
 
-target_include_directories(filemanager PRIVATE
-    src
-    ${CURSES_INCLUDE_DIR}
+target_include_directories(fm PRIVATE
+  src
+  ${CURSES_INCLUDE_DIR}
 )
 
-target_link_libraries(filemanager PRIVATE
-    ${CURSES_LIBRARIES}
+target_link_libraries(fm PRIVATE
+  ${CURSES_LIBRARIES}
+)
+
+install(TARGETS fm
+    RUNTIME DESTINATION /usr/bin
+    RENAME fm
 )

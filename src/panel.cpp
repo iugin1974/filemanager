@@ -17,6 +17,7 @@ void Panel::change_dir(const std::filesystem::path& path) {
 void Panel::reload() {
     file_list.clear();
 
+    try {
     for (auto& entry : std::filesystem::directory_iterator(current_path)) {
 
         // nome file
@@ -29,6 +30,11 @@ void Panel::reload() {
 
         file_list.push_back(entry);
     }
+    }
+    catch(const std::filesystem::filesystem_error& e) {
+     return;
+    }
+
 
     std::sort(file_list.begin(), file_list.end(), [](const auto& a, const auto& b) {
     auto category = [](const auto& entry) {
