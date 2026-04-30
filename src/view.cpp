@@ -20,6 +20,15 @@ void View::draw_panels() {
   }
 }
 
+void View::set_offset(const Panel& p, int o) {
+  for (int i = 0; i < 2; i++) {
+      if (panels[i]->get_panel() == &p) {
+       panels[i]->set_offset(o);
+       break;
+      }
+  }
+}
+
 CommandBar& View::get_command_bar(int active_panel) {
 return panels[active_panel]->get_command_bar();
 }

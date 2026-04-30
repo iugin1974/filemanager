@@ -44,6 +44,12 @@ void Panel_view::draw() {
   wrefresh(win);
 }
 
+void Panel_view::set_offset(int o) {
+ int height = getmaxy(win); 
+  int max_offset = std::max(0, (int)(panel->get_files().size()) - height);
+offset = std::min(o, max_offset);
+}
+
 CommandBar& Panel_view::get_command_bar() {
 return command_bar;
 }

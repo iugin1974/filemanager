@@ -12,6 +12,7 @@ Panel_view() : panel(nullptr), win(nullptr) {}
     void draw();
     Panel* get_panel() const;
     CommandBar& get_command_bar();
+    void set_offset(int o);
 
   private:
     int panel_number;

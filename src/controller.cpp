@@ -196,6 +196,7 @@ void Controller::jump_to_file(char ch) {
         if (name[0] == ch) {
             p.set_selected_index(i);
             p.reload();
+            view.set_offset(p, i);
             view.draw_panels();
             return;
         }

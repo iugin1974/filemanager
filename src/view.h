@@ -13,6 +13,7 @@ void init_panels(Panel*, Panel*);
 void add_panel(Panel& p);
 void draw_panels();
 CommandBar& get_command_bar(int active_panel);
+void set_offset(const Panel& p, int o);
 
   private:
 std::unique_ptr<Panel_view> panels[2];
