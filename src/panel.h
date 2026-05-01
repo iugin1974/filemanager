@@ -30,6 +30,7 @@ public:
   const std::vector<std::filesystem::path>& get_tagged_files() const;
   void tag_current_file(bool t);
   void toggle_tag_current_file();
+  std::vector<std::filesystem::path> get_files_to_operate() const;
 private:
   std::stack<std::filesystem::path> path_history;
   std::filesystem::path current_path;

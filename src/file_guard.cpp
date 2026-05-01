@@ -19,6 +19,21 @@ bool FileGuard::confirm_overwrite(const std::filesystem::path& source,
     return choice == 0;
 }
 
+
+bool FileGuard::confirm_overwrite(const std::filesystem::path& source) {
+    
+    int choice = Popup::show(
+        {
+            "File already exists!",
+            "",
+            "Source: " + file_info(source),
+        },
+        {"[Y]es", "[N]o"}
+    );
+    return choice == 0;
+}
+
+
 bool FileGuard::confirm_delete(const std::filesystem::path& path) {
     int choice = Popup::show(
         {

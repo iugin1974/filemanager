@@ -245,6 +245,10 @@ void Controller::set_sync(bool sync) {
     // sync on può solo essere attivato se i due cursori sono su un file con lo stesso nome.
     // se non esiste, non si attiva
     std::string n1 = panels[0].get_current_file_name();
+    if (n1.empty()) {
+     sync_mode = false;
+     return;
+    }
     int index = panels[1].contains(n1);
     if (index == -1) {
         sync_mode = false;
@@ -256,25 +260,17 @@ void Controller::set_sync(bool sync) {
 }
 
 void Controller::delete_file(bool silent) {
-      Panel& p = panels[get_active_panel()];
-    if (p.get_files().size() == 0) return;
-
-    const std::vector<std::filesystem::path>& tagged = p.get_tagged_files();
+    Panel& p = panels[get_active_panel()];
+    auto files = p.get_files_to_operate();
     
-    std::vector<std::filesystem::path> to_delete;
-    if (tagged.empty())
-        to_delete.push_back(p.get_current_file_fullpath());
-    else
-        to_delete = tagged;
-
     DeleteOperation d;
-    for (const auto& f : to_delete) {
+    for (const auto& f : files) {
         bool ok = true;
         if (!silent) ok = FileGuard::confirm_delete(f);
         if (ok) d.execute(f);
     }
 }
-
+// TODO -> multiple files
 void Controller::copy_file() {
     Panel& p1 = panels[get_active_panel()];
     if (p1.get_files().size() == 0) return;
@@ -325,6 +321,12 @@ void Controller::move_file() {
 void Controller::touch(const std::string& name) {
     Panel& p = panels[get_active_panel()];
     std::filesystem::path path = p.get_current_path();
+    
+    bool ok = true;
+    if (std::filesystem::exists(path / name))
+        ok = FileGuard::confirm_overwrite(path / name);
+    if (ok) {
     TouchOperation m;
     m.execute(path / name);
+    }
 }

@@ -85,7 +85,8 @@ if (selected_index == -1) selected_index = 0;
 }
 
 std::string Panel::get_current_file_name() const {
-return file_list.at(selected_index).get_name();
+    if (file_list.empty()) return "";
+    return file_list.at(selected_index).get_name();
 }
 
 std::filesystem::path Panel::get_current_file_fullpath() const {
@@ -172,4 +173,12 @@ void Panel::toggle_tag_current_file() {
 
 const std::vector<std::filesystem::path>& Panel::get_tagged_files() const {
 return tagged_files;
+}
+
+std::vector<std::filesystem::path> Panel::get_files_to_operate() const {
+    if (!tagged_files.empty())
+        return tagged_files;
+    if (file_list.empty())
+        return {};
+    return { get_current_file_fullpath() };
 }
