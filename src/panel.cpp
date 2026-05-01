@@ -146,3 +146,30 @@ if (file_list.at(i).get_name() == name) return i;
 }
 return -1;
 }
+
+void Panel::tag_current_file(bool t) {
+  FileEntry& fe = get_current_file();
+  fe.tag(t);
+  
+ if (t) {
+   tagged_files.push_back(fe.get_path());
+ }
+ else {
+   // rimuove l'oggetto dal vettore
+  for (auto it = tagged_files.begin(); it != tagged_files.end(); it++) {
+   if (*it == fe.get_path()) {
+    it = tagged_files.erase(it);
+    return;
+   }
+  }
+ }
+}
+
+void Panel::toggle_tag_current_file() {
+ tag_current_file(!get_current_file().is_tagged());
+ 
+}
+
+const std::vector<std::filesystem::path>& Panel::get_tagged_files() const {
+return tagged_files;
+}

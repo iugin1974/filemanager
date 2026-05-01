@@ -27,10 +27,14 @@ public:
   bool is_showing_hidden() const;
   FileEntry& get_file_at(int i);
   FileEntry& get_current_file();
+  const std::vector<std::filesystem::path>& get_tagged_files() const;
+  void tag_current_file(bool t);
+  void toggle_tag_current_file();
 private:
   std::stack<std::filesystem::path> path_history;
   std::filesystem::path current_path;
   std::vector<FileEntry> file_list;
+  std::vector<std::filesystem::path> tagged_files;
   int selected_index = 0;
   bool active = false;
   void update_selected_index();

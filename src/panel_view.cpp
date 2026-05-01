@@ -24,7 +24,7 @@ void Panel_view::draw() {
   if (selected >= offset + height)
     offset = selected - height + 1;
 
-  werase(win);  // pulisce la finestra
+  wclear(win);  // pulisce la finestra
 
   const auto& files = panel->get_files();
   int visible = std::min((int)files.size() - offset, height);

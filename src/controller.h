@@ -42,6 +42,7 @@ class Controller {
   void move_up();
   void move_down();
   void sync_move(bool up);
+  void toggle_tag_file();
   
     // --- Comandi ---
     std::string get_command();

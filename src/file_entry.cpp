@@ -12,6 +12,8 @@ void FileEntry::print(WINDOW* win, int row, bool selected) const {
         wattron(win, COLOR_PAIR(1));
         wattron(win, A_BOLD);
     }
+    if (tagged)
+        mvwprintw(win, row, 0, "*");
     mvwprintw(win, row, 1, "%s", entry.path().filename().string().c_str());
     wattroff(win, A_REVERSE | COLOR_PAIR(1) | A_BOLD);
 }
@@ -26,4 +28,16 @@ const std::string FileEntry::get_name() const {
 
 std::filesystem::path FileEntry::get_path() const {
     return entry.path();
+}
+
+void FileEntry::tag(bool t) {
+    tagged = t;
+}
+
+void FileEntry::toggle_tag() {
+    tagged = !tagged;
+}
+
+bool FileEntry::is_tagged() const {
+    return tagged;
 }

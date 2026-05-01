@@ -89,6 +89,8 @@ bool Controller::handle_key(int ch) {
             }
             break;    
         }
+        case ctrl('t'): toggle_tag_file();
+            break;
         case 9: // TAB
             change_active_panel();
             break;
@@ -212,6 +214,13 @@ void Controller::jump_to_file(char ch) {
         }
     }
 }
+
+void Controller::toggle_tag_file() {
+ Panel& p = panels.at(get_active_panel());
+ p.toggle_tag_current_file();
+ p.move_down();
+ view.draw_panels();
+}
 // ---------------------------------------------------------------------------
 // Comandi
 // ---------------------------------------------------------------------------
@@ -247,14 +256,22 @@ void Controller::set_sync(bool sync) {
 }
 
 void Controller::delete_file(bool silent) {
-    Panel& p = panels[get_active_panel()];
+      Panel& p = panels[get_active_panel()];
     if (p.get_files().size() == 0) return;
-    const std::filesystem::path& f = p.get_current_file_fullpath();
-    bool ok = true;
-    if (!silent) ok = FileGuard::confirm_delete(f);
-    if (ok) {
+
+    const std::vector<std::filesystem::path>& tagged = p.get_tagged_files();
+    
+    std::vector<std::filesystem::path> to_delete;
+    if (tagged.empty())
+        to_delete.push_back(p.get_current_file_fullpath());
+    else
+        to_delete = tagged;
+
     DeleteOperation d;
-    d.execute(f);
+    for (const auto& f : to_delete) {
+        bool ok = true;
+        if (!silent) ok = FileGuard::confirm_delete(f);
+        if (ok) d.execute(f);
     }
 }
 
