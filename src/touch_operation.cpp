@@ -6,8 +6,8 @@ void TouchOperation::execute(const std::filesystem::path& path) {
     std::ofstream file(path);    
 }
 
-void TouchOperation::execute(const std::filesystem::path& path,
-                              const std::filesystem::path& path2) {
+void TouchOperation::execute(const std::filesystem::path&,
+                              const std::filesystem::path&) {
     // non usato per touch
                               }
                               

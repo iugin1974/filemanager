@@ -5,7 +5,7 @@ void MkdirOperation::execute(const std::filesystem::path& path) {
     std::filesystem::create_directory(path);
 }
 
-void MkdirOperation::execute(const std::filesystem::path& path,
-                               const std::filesystem::path& path2) {
+void MkdirOperation::execute(const std::filesystem::path&,
+                               const std::filesystem::path&) {
     // non usato per mkdir
 }

@@ -40,7 +40,7 @@ void StatusBar::print_message(const std::filesystem::path& current_path, const F
             size_str = std::to_string(size / 1024) + " KB";
         else
             size_str = std::to_string(size / (1024 * 1024)) + " MB";
-        } catch (const std::filesystem::filesystem_error e) {
+        } catch (const std::filesystem::filesystem_error& e) {
          size = 0;   
         }
     } else {

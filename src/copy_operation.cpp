@@ -3,7 +3,7 @@
 #include <string>
 #include "popup.h"
 
-void CopyOperation::execute(const std::filesystem::path& path) {
+void CopyOperation::execute(const std::filesystem::path&) {
 }
 // non usato per copy
 

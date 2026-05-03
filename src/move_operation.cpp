@@ -1,7 +1,7 @@
 #include "move_operation.h"
 #include <filesystem>
 
-void MoveOperation::execute(const std::filesystem::path& path) {
+void MoveOperation::execute(const std::filesystem::path&) {
 }
 
 void MoveOperation::execute(const std::filesystem::path& path,
