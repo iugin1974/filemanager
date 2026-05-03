@@ -12,46 +12,46 @@ CommandBar::~CommandBar() {
 }
 
 std::string CommandBar::get_command() {
-    nocbreak();
-    echo();
+  nocbreak();
+  echo();
 
-    std::string input;
+  std::string input;
 
-    werase(win);
-    mvwprintw(win, 0, 0, ":");
-    wrefresh(win);
+  werase(win);
+  mvwprintw(win, 0, 0, ":");
+  wrefresh(win);
 
-    int ch;
-    while ((ch = wgetch(win)) != '\n') {
+  int ch;
+  while ((ch = wgetch(win)) != '\n') {
 
-        if (ch >= 32 && ch <= 126) {
-            input.push_back(static_cast<char>(ch));
-        }
-        else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
-            if (!input.empty()) {
-                input.pop_back();
-            }
-        }
-
-        werase(win);
-        mvwprintw(win, 0, 1, "%s", input.c_str());
-        wrefresh(win);
+    if (ch >= 32 && ch <= 126) {
+      input.push_back(static_cast<char>(ch));
+    } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
+      if (!input.empty()) {
+        input.pop_back();
+      }
     }
 
-    noecho();
-    cbreak();
+    werase(win);
+    mvwprintw(win, 0, 1, "%s", input.c_str());
+    wrefresh(win);
+  }
 
-    return input;
+  noecho();
+  cbreak();
+
+  return input;
 }
 
-void CommandBar::print_message(std::string msg) {
+void CommandBar::print_message(std::string msg, const int message_type) {
   werase(win);
 
+  if (message_type == CommandBar::ERROR)
+    wattron(win, COLOR_PAIR(9) | A_BOLD);
   mvwprintw(win, 0, 0, "%s", msg.c_str());
 
   wrefresh(win);
+  wattroff(win, COLOR_PAIR(9) | A_BOLD);
 }
 
-void CommandBar::clear() {
-  werase(win);
-}
+void CommandBar::clear() { werase(win); }

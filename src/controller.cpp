@@ -11,6 +11,7 @@
 #include "popup.h"
 #include "touch_operation.h"
 #include "view.h"
+#include <filesystem>
 #include <unistd.h>
 
 #define ctrl(x) ((x)&0x1f) // definisce CTRL+H
@@ -372,4 +373,26 @@ void Controller::touch(const std::string &name) {
     TouchOperation m;
     m.execute(path / name);
   }
+}
+
+void Controller::change_dir(const std::string &path) {
+  if (path == "..") {
+   go_up();
+   return;
+  }
+  std::string full_path;
+  
+  if (path[0] == '/') {
+    full_path = path;
+  } else {
+    full_path = get_active_panel().get_current_path() / path;
+  }
+
+  if (!std::filesystem::exists(full_path)) {
+    CommandBar c = view.get_command_bar(get_active_panel_index());
+    c.print_message("Directory not exists", CommandBar::ERROR);
+    return;
+  }
+  Panel &p = get_active_panel();
+  p.change_dir(full_path);
 }

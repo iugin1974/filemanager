@@ -18,6 +18,7 @@ init_pair(5, COLOR_YELLOW, -1);  // file multimediale
 init_pair(6, COLOR_WHITE, -1);   // file normale
 init_pair(7, -1, COLOR_WHITE);   // selezione reverse
 init_pair(8, -1, COLOR_BLUE);    // pannello attivo
+init_pair(9, COLOR_WHITE, COLOR_RED);     // messaggio errore
 
   refresh();
 

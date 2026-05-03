@@ -36,6 +36,8 @@ void Command::execute(const std::string& cmd) {
         controller->move_file();
     else if (name == "mv" && args.size() == 1)
         controller->move_file(args[0]);
+    else if (name == "cd" && args.size() == 1)
+        controller->change_dir(args[0]);
 }
 
 

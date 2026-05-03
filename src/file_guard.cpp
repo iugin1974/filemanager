@@ -47,6 +47,13 @@ bool FileGuard::confirm_delete(const std::filesystem::path& path) {
 }
 
 std::string FileGuard::file_info(const std::filesystem::path& p) {
+    if (std::filesystem::is_directory(p)) {
+        auto count = std::distance(
+    std::filesystem::recursive_directory_iterator(p),
+    std::filesystem::recursive_directory_iterator{}
+);
+         return p.filename().string()+ "  (" + std::to_string(count)+ " files)" ;
+    }
     auto size = std::filesystem::file_size(p);
     auto ftime = std::filesystem::last_write_time(p);
     
