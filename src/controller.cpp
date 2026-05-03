@@ -129,6 +129,7 @@ bool Controller::handle_key(int ch) {
   }
   case '$': {
     reload_panels();
+    break;
   }
   default:
     jump_to_file(ch);
@@ -223,7 +224,8 @@ void Controller::move_down() {
 void Controller::jump_to_file(char ch) {
   // auto oggetto = [capture list] (parametri) -> tipo_ritorno { corpo };
   auto jump = [&](Panel &p) -> void {
-    for (int i = p.get_selected_index() + 1; i < p.get_files().size(); i++) {
+    for (int i = p.get_selected_index() + 1;
+         i < static_cast<int>(p.get_files().size()); i++) {
       std::string name = p.get_file_at(i).get_name();
       if (name[0] == ch) {
         p.set_selected_index(i);
@@ -306,24 +308,27 @@ void Controller::delete_file(bool silent) {
       d.execute(f);
   }
 }
-// TODO -> multiple files
+
 void Controller::copy_file() {
-  Panel &p1 = panels[get_active_panel_index()];
+  Panel &p1 = get_active_panel();
   if (p1.get_files().size() == 0)
     return;
-  Panel &p2 = panels[1 - get_active_panel_index()];
+  Panel &p2 = get_inactive_panel();
 
-  std::filesystem::path source = p1.get_current_file_fullpath();
+  auto files = p1.get_files_to_operate();
 
-  std::filesystem::path destination =
-      p2.get_current_path() / p1.get_current_file_name();
+  CopyOperation c;
+  for (auto &source : files) {
 
-  bool ok = true;
-  if (std::filesystem::exists(destination))
-    ok = FileGuard::confirm_overwrite(source, destination);
-  if (ok) {
-    CopyOperation c;
-    c.execute(source, destination);
+    std::filesystem::path destination =
+        p2.get_current_path() / source.filename();
+
+    bool ok = true;
+    if (std::filesystem::exists(destination))
+      ok = FileGuard::confirm_overwrite(source, destination);
+    if (ok) {
+      c.execute(source, destination);
+    }
   }
 }
 

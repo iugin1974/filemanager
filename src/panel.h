@@ -22,7 +22,7 @@ public:
   bool go_back();
   bool is_active() const;
   void set_active(bool);
-  const int contains(const std::string& name) const;
+  int contains(const std::string& name) const;
   void show_hidden_files(bool show);
   bool is_showing_hidden() const;
   FileEntry& get_file_at(int i);

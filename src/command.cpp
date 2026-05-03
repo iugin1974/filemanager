@@ -23,12 +23,12 @@ void Command::execute(const std::string& cmd) {
     else if (name == "rm") controller->delete_file(false);
     else if (name == "cp") controller->copy_file();
     else if (name == "mkdir" && args.size() > 0) {
-        for (int i = 0; i < args.size(); i++) {
+        for (int i = 0; i < static_cast<int>(args.size()); i++) {
             controller->mkdir(args[i]); 
         }
     }
     else if (name == "touch" && args.size() > 0) {
-               for (int i = 0; i < args.size(); i++) {
+               for (int i = 0; i < static_cast<int>(args.size()); i++) {
             controller->touch(args[i]); 
         } 
     }

@@ -80,7 +80,7 @@ selected_index = i;
 }
 
 void Panel::update_selected_index() {
-if (selected_index >= file_list.size()) selected_index = file_list.size() - 1;
+if (selected_index >= static_cast<int>(file_list.size())) selected_index = static_cast<int>(file_list.size()) - 1;
 if (selected_index == -1) selected_index = 0;
 }
 
@@ -141,8 +141,8 @@ void Panel::set_active(bool a) {
   active = a;
 }
 
-const int Panel::contains(const std::string& name) const {
-for (int i = 0; i < file_list.size(); i++) {
+int Panel::contains(const std::string& name) const {
+for (int i = 0; i < static_cast<int> (file_list.size()); i++) {
 if (file_list.at(i).get_name() == name) return i;
 }
 return -1;
