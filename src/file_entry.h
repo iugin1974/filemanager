@@ -7,6 +7,7 @@
 class FileEntry {
   public:
     FileEntry(const std::filesystem::directory_entry& entry);
+    FileEntry() : placeholder(true) {};
     void print(WINDOW* win, int row, bool selected) const;
     bool is_directory() const;
     std::filesystem::path get_path() const;
@@ -17,4 +18,5 @@ class FileEntry {
   private:
     std::filesystem::directory_entry entry;
     bool tagged = false;
+    bool placeholder = false;
 };

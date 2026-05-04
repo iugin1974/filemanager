@@ -82,4 +82,5 @@ private:
                               const std::filesystem::path &dest);
   bool show_delete_file_popup(const std::filesystem::path &path);
   std::string file_info(const std::filesystem::path &p);
+  const void sync_partner(bool sync);
 };

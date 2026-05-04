@@ -153,7 +153,7 @@ void Controller::reload_panels() {
 
 void Controller::enter_pressed(int selected_line, int panel_index) {
   Panel &panel = panels[panel_index];
-  if (panel.get_files().size() == 0)
+  if (panel.get_raw_file_list().size() == 0)
     return;
   FileEntry entry = panel.get_file(selected_line);
 
@@ -226,7 +226,7 @@ void Controller::jump_to_file(char ch) {
   // auto oggetto = [capture list] (parametri) -> tipo_ritorno { corpo };
   auto jump = [&](Panel &p) -> void {
     for (int i = p.get_selected_index() + 1;
-         i < static_cast<int>(p.get_files().size()); i++) {
+         i < static_cast<int>(p.get_raw_file_list().size()); i++) {
       std::string name = p.get_file_at(i).get_name();
       if (name[0] == ch) {
         p.set_selected_index(i);
@@ -256,6 +256,16 @@ void Controller::toggle_tag_file() {
   p.toggle_tag_current_file();
   p.move_down();
   view.draw_panels();
+}
+
+const void Controller::sync_partner(bool sync) {
+  if (sync) {
+    panels[0].set_sync_partner(&panels[1]);
+    panels[1].set_sync_partner(&panels[0]);
+  } else {
+    panels[0].set_sync_partner(nullptr);
+    panels[1].set_sync_partner(nullptr);
+  }
 }
 // ---------------------------------------------------------------------------
 // Comandi
@@ -312,7 +322,7 @@ void Controller::delete_file(bool silent) {
 
 void Controller::copy_file() {
   Panel &p1 = get_active_panel();
-  if (p1.get_files().size() == 0)
+  if (p1.get_raw_file_list().size() == 0)
     return;
   Panel &p2 = get_inactive_panel();
 
@@ -342,7 +352,7 @@ void Controller::mkdir(const std::string &name) {
 
 void Controller::move_file(const std::string &name) {
   Panel &p1 = panels[get_active_panel_index()];
-  if (p1.get_files().size() == 0)
+  if (p1.get_raw_file_list().size() == 0)
     return;
 
   std::filesystem::path source = p1.get_current_file_fullpath();
@@ -377,11 +387,11 @@ void Controller::touch(const std::string &name) {
 
 void Controller::change_dir(const std::string &path) {
   if (path == "..") {
-   go_up();
-   return;
+    go_up();
+    return;
   }
   std::string full_path;
-  
+
   if (path[0] == '/') {
     full_path = path;
   } else {
