@@ -16,6 +16,32 @@
 
 #define ctrl(x) ((x)&0x1f) // definisce CTRL+H
 
+
+#include <fstream>
+void Controller::test()
+{
+    // Crea le cartelle
+    std::filesystem::create_directories("/tmp/A");
+    std::filesystem::create_directories("/tmp/B");
+
+    // File in A
+    for (const auto& name : {"a.txt", "b.txt", "c.txt", "d.txt"})
+    {
+        std::ofstream("/tmp/A/" + std::string(name));
+    }
+
+    // File in B
+    for (const auto& name : {"a.txt", "b.txt", "d.txt"})
+    {
+        std::ofstream("/tmp/B/" + std::string(name));
+    }
+
+    // Cambia directory nei due pannelli
+    panels[0].change_dir("/tmp/");
+    panels[1].change_dir("/tmp/");
+    
+}
+
 // ---------------------------------------------------------------------------
 // Costruttore
 // ---------------------------------------------------------------------------
@@ -24,6 +50,7 @@ Controller::Controller(View &view) : view(view) {
   reload_panels();
   panels[0].set_active(true);
   view.init_panels(&panels[0], &panels[1]);
+  test();
   view.draw_panels();
 }
 
@@ -153,22 +180,23 @@ void Controller::reload_panels() {
 
 void Controller::enter_pressed(int selected_line, int panel_index) {
   Panel &panel = panels[panel_index];
-  if (panel.get_raw_file_list().size() == 0)
+  if (panel.get_file_list().size() == 0)
     return;
   FileEntry entry = panel.get_file(selected_line);
-
+  if (entry.is_placeholder())
+    return;
   if (entry.is_directory()) {
     panel.change_dir(entry.get_path());
     view.draw_panels();
-  } else {
-    pid_t new_process = fork();
-    if (new_process == 0) {
-      execlp("xdg-open", "xdg-open", entry.get_path().string().c_str(),
-             nullptr);
-      _exit(1);
-    } else if (new_process < 0) {
-      Popup::show({"Error: cannot open file"}, {"[OK]"});
-    }
+    return;
+  }
+  // apre il file selezionato sul pannello attivo
+  pid_t new_process = fork();
+  if (new_process == 0) {
+    execlp("xdg-open", "xdg-open", entry.get_path().string().c_str(), nullptr);
+    _exit(1);
+  } else if (new_process < 0) {
+    Popup::show({"Error: cannot open file"}, {"[OK]"});
   }
 }
 
@@ -199,7 +227,7 @@ void Controller::go_back() {
 void Controller::sync_move(bool sync) {
   int other = (get_active_panel_index() == 0) ? 1 : 0;
   sync ? panels[get_active_panel_index()].move_up()
-     : panels[get_active_panel_index()].move_down();
+       : panels[get_active_panel_index()].move_down();
   std::string name = panels[get_active_panel_index()].get_current_file_name();
   int index = panels[other].contains(name);
   if (index != -1)
@@ -207,19 +235,11 @@ void Controller::sync_move(bool sync) {
 }
 
 void Controller::move_up() {
-  if (!sync_mode) {
     for_active_panels([](Panel &p, int) { p.move_up(); });
-    return;
-  }
-  sync_move(true);
 }
 
 void Controller::move_down() {
-  if (!sync_mode) {
     for_active_panels([](Panel &p, int) { p.move_down(); });
-    return;
-  }
-  sync_move(false);
 }
 
 void Controller::jump_to_file(char ch) {
@@ -262,12 +282,11 @@ void Controller::sync_partner(bool sync) {
   if (sync) {
     panels[0].set_sync_partner(&panels[1]); // non fa clear
     panels[1].set_sync_partner(&panels[0]); // non fa clear
-    panels[0].align_with(panels[1].get_raw_file_list());
-    panels[1].align_with(panels[0].get_raw_file_list());
   } else {
     panels[0].set_sync_partner(nullptr); // fa clear
     panels[1].set_sync_partner(nullptr); // fa clear
   }
+  // il reload viene chiamato da evaluate_command
 }
 // ---------------------------------------------------------------------------
 // Comandi
@@ -307,8 +326,8 @@ void Controller::set_sync(bool sync) {
   }
 
   panels[1].set_selected_index(index);
-    sync_mode = true;
-    sync_partner(true);
+  sync_mode = true;
+  sync_partner(true);
 }
 
 void Controller::delete_file(bool silent) {

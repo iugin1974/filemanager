@@ -20,6 +20,7 @@ void StatusBar::print_message(const std::filesystem::path& current_path) {
 }
 
 void StatusBar::print_message(const std::filesystem::path& current_path, const FileEntry& entry) {
+    if (entry.is_placeholder()) return;
     werase(win);
     wattron(win, A_REVERSE);
     whline(win, ' ', getmaxx(win));

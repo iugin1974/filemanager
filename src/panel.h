@@ -22,6 +22,7 @@ public:
   std::string get_current_file_name() const;
   const std::vector<FileEntry>& get_raw_file_list() const;
   std::filesystem::path get_current_file_fullpath() const;
+  Panel* get_aligned_panel();
   int get_selected_index() const;
   void set_selected_index(int i);
   void move_up();

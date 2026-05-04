@@ -44,6 +44,8 @@ public:
   void reload_panels();
 
 private:
+  void test();
+  
   bool exit = false;
 
   // --- Stato ---

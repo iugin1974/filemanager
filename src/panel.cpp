@@ -23,11 +23,12 @@ const std::vector<FileEntry> &Panel::get_file_list() const {
   return has_sync_partner() ? aligned_file_list : raw_file_list;
 }
 
-void Panel::align_with(const std::vector<FileEntry> &other) {
+void Panel::align_with(const std::vector<FileEntry> &other_file_list) {
   aligned_file_list.clear();
+  
   size_t i = 0, j = 0;
-  while (i < raw_file_list.size() && j < other.size()) {
-    int cmp = raw_file_list[i].get_name().compare(other[j].get_name());
+  while (i < raw_file_list.size() && j < other_file_list.size()) {
+    int cmp = raw_file_list[i].get_name().compare(other_file_list[j].get_name());
     if (cmp == 0) {
       aligned_file_list.push_back(raw_file_list[i]);
       ++i;
@@ -40,15 +41,17 @@ void Panel::align_with(const std::vector<FileEntry> &other) {
       ++j;
     }
   }
+  // aggiunge i files restanti
   while (i < raw_file_list.size())
     aligned_file_list.push_back(raw_file_list[i++]);
-  while (j < other.size())
+  while (j < other_file_list.size()) {
     aligned_file_list.push_back(FileEntry());
+    j++;
+  }
 }
 
 void Panel::reload() {
   raw_file_list.clear();
-
   try {
     for (auto &entry : std::filesystem::directory_iterator(current_path)) {
       const auto name = entry.path().filename().string();
@@ -82,6 +85,10 @@ void Panel::reload() {
               return a.get_path().filename() < b.get_path().filename();
             });
 
+  if (has_sync_partner()) {
+    align_with(sync_partner->get_raw_file_list());
+    sync_partner->align_with(raw_file_list);
+  }
   update_selected_index();
 }
 
@@ -153,6 +160,10 @@ const std::vector<FileEntry> &Panel::get_raw_file_list() const {
 
 const FileEntry &Panel::get_file(int i) const {
   return get_file_list().at(i);
+}
+
+Panel* Panel::get_aligned_panel() {
+  return sync_partner;
 }
 
 bool Panel::go_up() {
