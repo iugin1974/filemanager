@@ -196,9 +196,9 @@ void Controller::go_back() {
     view.draw_panels();
 }
 
-void Controller::sync_move(bool up) {
+void Controller::sync_move(bool sync) {
   int other = (get_active_panel_index() == 0) ? 1 : 0;
-  up ? panels[get_active_panel_index()].move_up()
+  sync ? panels[get_active_panel_index()].move_up()
      : panels[get_active_panel_index()].move_down();
   std::string name = panels[get_active_panel_index()].get_current_file_name();
   int index = panels[other].contains(name);
@@ -258,13 +258,15 @@ void Controller::toggle_tag_file() {
   view.draw_panels();
 }
 
-const void Controller::sync_partner(bool sync) {
+void Controller::sync_partner(bool sync) {
   if (sync) {
-    panels[0].set_sync_partner(&panels[1]);
-    panels[1].set_sync_partner(&panels[0]);
+    panels[0].set_sync_partner(&panels[1]); // non fa clear
+    panels[1].set_sync_partner(&panels[0]); // non fa clear
+    panels[0].align_with(panels[1].get_raw_file_list());
+    panels[1].align_with(panels[0].get_raw_file_list());
   } else {
-    panels[0].set_sync_partner(nullptr);
-    panels[1].set_sync_partner(nullptr);
+    panels[0].set_sync_partner(nullptr); // fa clear
+    panels[1].set_sync_partner(nullptr); // fa clear
   }
 }
 // ---------------------------------------------------------------------------
@@ -286,6 +288,7 @@ void Controller::evaluate_command(const std::string &cmd) {
 void Controller::set_sync(bool sync) {
   if (!sync) {
     sync_mode = false;
+    sync_partner(false);
     return;
   }
   // sync on può solo essere attivato se i due cursori sono su un file con lo
@@ -293,17 +296,19 @@ void Controller::set_sync(bool sync) {
   std::string n1 = panels[0].get_current_file_name();
   if (n1.empty()) {
     sync_mode = false;
+    sync_partner(false);
     return;
   }
   int index = panels[1].contains(n1);
   if (index == -1) {
     sync_mode = false;
+    sync_partner(false);
     return;
   }
 
   panels[1].set_selected_index(index);
-  if (sync)
     sync_mode = true;
+    sync_partner(true);
 }
 
 void Controller::delete_file(bool silent) {

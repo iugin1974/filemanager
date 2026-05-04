@@ -41,3 +41,7 @@ void FileEntry::toggle_tag() {
 bool FileEntry::is_tagged() const {
     return tagged;
 }
+
+bool FileEntry::is_placeholder() const {
+ return placeholder;   
+}

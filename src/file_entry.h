@@ -15,6 +15,7 @@ class FileEntry {
     void tag(bool t);
     void toggle_tag();
     bool is_tagged() const;
+    bool is_placeholder() const;
   private:
     std::filesystem::directory_entry entry;
     bool tagged = false;

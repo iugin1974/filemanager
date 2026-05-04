@@ -26,7 +26,7 @@ void Panel_view::draw() {
 
   wclear(win);  // pulisce la finestra
 
-  const auto& files = panel->get_raw_file_list();
+  const auto& files = panel->get_file_list();
   int visible = std::min((int)files.size() - offset, height);
 
   for (int i = 0; i < visible; i++) {
@@ -34,7 +34,7 @@ void Panel_view::draw() {
     files[i + offset].print(win, i, is_selected);
   }
   
-  if (panel->get_raw_file_list().size() > 0)
+  if (panel->get_file_list().size() > 0)
     status_bar.print_message(panel->get_current_path(), panel->get_current_file());
   else
     status_bar.print_message(panel->get_current_path());
@@ -46,7 +46,7 @@ void Panel_view::draw() {
 
 void Panel_view::set_offset(int o) {
  int height = getmaxy(win); 
-  int max_offset = std::max(0, (int)(panel->get_raw_file_list().size()) - height);
+  int max_offset = std::max(0, (int)(panel->get_file_list().size()) - height);
 offset = std::min(o, max_offset);
 }
 
