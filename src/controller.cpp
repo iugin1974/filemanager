@@ -133,8 +133,7 @@ bool Controller::handle_key(int ch) {
   case KEY_ENTER:
   case 10:
   case 13:
-    for_active_panels(
-        [this](Panel &p, int i) { enter_pressed(p.get_selected_index(), i); });
+    enter_pressed();
     break;
   case ctrl('h'): {
     for (int i = 0; i < 2; i++) {
@@ -178,15 +177,25 @@ void Controller::reload_panels() {
   panels[1].reload();
 }
 
-void Controller::enter_pressed(int selected_line, int panel_index) {
-  Panel &panel = panels[panel_index];
-  if (panel.get_file_list().size() == 0)
+void Controller::enter_pressed() {  
+  Panel &active_panel = get_active_panel();
+  Panel &other_panel = get_inactive_panel();
+  // il panello attivo non ha files
+  if (active_panel.get_file_list().size() == 0)
     return;
-  FileEntry entry = panel.get_file(selected_line);
+  // il pannello attivo ha files
+  // entry è il file/directory su cui si è cliccato
+  FileEntry entry = active_panel.get_file(active_panel.get_selected_index());
+  // placeholder: esce
   if (entry.is_placeholder())
     return;
+  // directory: viene aperta
   if (entry.is_directory()) {
-    panel.change_dir(entry.get_path());
+    active_panel.change_dir(entry.get_path());
+    if (sync_mode) {
+      other_panel.change_dir(other_panel.get_current_path() / entry.get_name());
+      align_panels();
+    }
     view.draw_panels();
     return;
   }
@@ -280,13 +289,13 @@ void Controller::toggle_tag_file() {
 
 void Controller::sync_partner(bool sync) {
   if (sync) {
-    panels[0].set_sync_partner(&panels[1]); // non fa clear
-    panels[1].set_sync_partner(&panels[0]); // non fa clear
+    panels[0].set_sync_partner(&panels[1]);
+    panels[1].set_sync_partner(&panels[0]);
+    align_panels();
   } else {
-    panels[0].set_sync_partner(nullptr); // fa clear
-    panels[1].set_sync_partner(nullptr); // fa clear
+    panels[0].set_sync_partner(nullptr);
+    panels[1].set_sync_partner(nullptr);
   }
-  // il reload viene chiamato da evaluate_command
 }
 // ---------------------------------------------------------------------------
 // Comandi
@@ -329,6 +338,12 @@ void Controller::set_sync(bool sync) {
   sync_mode = true;
   sync_partner(true);
 }
+
+void Controller::align_panels() {
+  if (!sync_mode) return;
+  panels[0].align_with(panels[1].get_raw_file_list());
+  panels[1].align_with(panels[0].get_raw_file_list());
+} 
 
 void Controller::delete_file(bool silent) {
   Panel &p = panels[get_active_panel_index()];

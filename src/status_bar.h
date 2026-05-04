@@ -6,7 +6,7 @@ class StatusBar {
   public:
     StatusBar() : win(nullptr) {}
     StatusBar(int y_pos, int x_pos, int width);
-    void print_message(const std::filesystem::path& path, const FileEntry&);
+    void print_message(const std::filesystem::path& path, const FileEntry&, const size_t file_number, int index);
     void print_message(const std::filesystem::path& path);
     void clear();
 

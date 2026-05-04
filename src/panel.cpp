@@ -23,11 +23,14 @@ const std::vector<FileEntry> &Panel::get_file_list() const {
   return has_sync_partner() ? aligned_file_list : raw_file_list;
 }
 
+#include <iostream>
 void Panel::align_with(const std::vector<FileEntry> &other_file_list) {
   aligned_file_list.clear();
-  
+  std::cerr << "align_with\n";
   size_t i = 0, j = 0;
   while (i < raw_file_list.size() && j < other_file_list.size()) {
+    std::cerr << "i: " << i << " [" << raw_file_list[i].get_name() << "]"
+          << " - j: " << j << " [" << other_file_list[j].get_name() << "]\n";
     int cmp = raw_file_list[i].get_name().compare(other_file_list[j].get_name());
     if (cmp == 0) {
       aligned_file_list.push_back(raw_file_list[i]);
@@ -85,10 +88,7 @@ void Panel::reload() {
               return a.get_path().filename() < b.get_path().filename();
             });
 
-  if (has_sync_partner()) {
-    align_with(sync_partner->get_raw_file_list());
-    sync_partner->align_with(raw_file_list);
-  }
+
   update_selected_index();
 }
 

@@ -54,6 +54,7 @@ private:
   bool sync_mode = false;
 
   // --- Helpers ---
+  void align_panels();
   int get_active_panel_index() const;
   int get_active_panel_index();
   int get_inactive_panel_index() const;
@@ -69,7 +70,7 @@ private:
   template <typename Fn> void for_active_panels(Fn fn);
 
   // --- Azioni ---
-  void enter_pressed(int selected_line, int panel_index);
+  void enter_pressed();
   void go_up();
   void go_back();
   void move_up();

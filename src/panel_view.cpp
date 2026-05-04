@@ -35,7 +35,7 @@ void Panel_view::draw() {
   }
   
   if (panel->get_file_list().size() > 0)
-    status_bar.print_message(panel->get_current_path(), panel->get_current_file());
+    status_bar.print_message(panel->get_current_path(), panel->get_current_file(), files.size(), selected + 1);
   else
     status_bar.print_message(panel->get_current_path());
     

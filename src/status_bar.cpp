@@ -19,7 +19,7 @@ void StatusBar::print_message(const std::filesystem::path& current_path) {
     wrefresh(win);
 }
 
-void StatusBar::print_message(const std::filesystem::path& current_path, const FileEntry& entry) {
+void StatusBar::print_message(const std::filesystem::path& current_path, const FileEntry& entry, const size_t file_number, const int index) {
     if (entry.is_placeholder()) return;
     werase(win);
     wattron(win, A_REVERSE);
@@ -65,7 +65,7 @@ void StatusBar::print_message(const std::filesystem::path& current_path, const F
     int width = getmaxx(win);
     int right_col = width - right.size() - 1;
     mvwprintw(win, 0, 0, "%s", left.c_str());
-    mvwprintw(win, 0, right_col, "%s", right.c_str());
+    mvwprintw(win, 0, right_col, "%d/%d - %s", index, static_cast<int>(file_number), right.c_str());
 
     wattroff(win, A_REVERSE);
     wrefresh(win);
