@@ -4,9 +4,34 @@
 #include <filesystem>
 
 
+bool FileGuard::confirm_delete(const std::filesystem::path& path) {
+    int choice = Popup::show(
+        {
+            "Confirm delete?",
+            "",
+            file_info(path),
+        },
+        {"[Y]es", "[N]o"}
+    );
+    return choice == 0;
+}
+
+bool FileGuard::confirm_delete(const std::filesystem::path& path1,
+                               const std::filesystem::path& path2) {
+    int choice = Popup::show(
+        {
+            "Confirm delete from both panels?",
+            "",
+            file_info(path1),
+            file_info(path2),
+        },
+        {"[Y]es", "[N]o"}
+    );
+    return choice == 0;
+}
+
 bool FileGuard::confirm_overwrite(const std::filesystem::path& source,
-                                const std::filesystem::path& dest) {
-    
+                                  const std::filesystem::path& dest) {
     int choice = Popup::show(
         {
             "File already exists!",
@@ -19,27 +44,12 @@ bool FileGuard::confirm_overwrite(const std::filesystem::path& source,
     return choice == 0;
 }
 
-
 bool FileGuard::confirm_overwrite(const std::filesystem::path& source) {
-    
     int choice = Popup::show(
         {
             "File already exists!",
             "",
             "Source: " + file_info(source),
-        },
-        {"[Y]es", "[N]o"}
-    );
-    return choice == 0;
-}
-
-
-bool FileGuard::confirm_delete(const std::filesystem::path& path) {
-    int choice = Popup::show(
-        {
-            "Confirm delete?",
-            "",
-            "" + file_info(path),
         },
         {"[Y]es", "[N]o"}
     );

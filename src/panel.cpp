@@ -116,8 +116,8 @@ int Panel::get_selected_index() const { return selected_index; }
 void Panel::set_selected_index(int i) { selected_index = i; }
 
 void Panel::update_selected_index() {
-  if (selected_index >= static_cast<int>(raw_file_list.size()))
-    selected_index = static_cast<int>(raw_file_list.size()) - 1;
+  if (selected_index >= static_cast<int>(get_file_list().size()))
+    selected_index = static_cast<int>(get_file_list().size()) - 1;
   if (selected_index == -1)
     selected_index = 0;
 }
@@ -231,7 +231,7 @@ const std::vector<std::filesystem::path> &Panel::get_tagged_files() const {
 std::vector<std::filesystem::path> Panel::get_files_to_operate() const {
   if (!tagged_files.empty())
     return tagged_files;
-  if (raw_file_list.empty())
+  if (get_file_list().empty())
     return {};
   // Se il cursore è su un buco, niente da operare
   const FileEntry &fe = get_current_file();
