@@ -2,8 +2,11 @@
 #include <filesystem>
 #include "file_entry.h"
 
+
+    
 FileEntry::FileEntry(const std::filesystem::directory_entry& entry) {
     this->entry = entry;
+    last_write_time = entry.last_write_time();
 }
 
 void FileEntry::print(WINDOW* win, int row, bool selected) const {
@@ -12,10 +15,17 @@ void FileEntry::print(WINDOW* win, int row, bool selected) const {
         wattron(win, COLOR_PAIR(1));
         wattron(win, A_BOLD);
     }
+    if (sync_status == SyncStatus::NEWER) {
+     wattron(win, COLOR_PAIR(2));   
+    } else
+        if (sync_status == SyncStatus::OLDER) {
+            wattron(win, COLOR_PAIR(4));
+        } 
     if (tagged)
         mvwprintw(win, row, 0, "*");
     mvwprintw(win, row, 1, "%s", entry.path().filename().string().c_str());
-    wattroff(win, A_REVERSE | COLOR_PAIR(1) | A_BOLD);
+    wattroff(win, A_REVERSE | A_BOLD);
+    wattroff(win, A_COLOR);
 }
 
 bool FileEntry::is_directory() const {
@@ -44,4 +54,16 @@ bool FileEntry::is_tagged() const {
 
 bool FileEntry::is_placeholder() const {
  return placeholder;   
+}
+
+SyncStatus FileEntry::get_sync_status() const {
+    return sync_status;
+}
+
+void FileEntry::set_sync_status(SyncStatus s) {
+ sync_status = s;   
+}
+
+const std::filesystem::file_time_type& FileEntry::get_last_write_time() const {
+ return last_write_time;   
 }

@@ -60,7 +60,7 @@ Controller::Controller(View &view) : view(view) {
   reload_panels();
   panels[0].set_active(true);
   view.init_panels(&panels[0], &panels[1]);
-  test();
+ // test();
   view.draw_panels();
 }
 

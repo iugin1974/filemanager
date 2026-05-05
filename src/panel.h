@@ -12,7 +12,7 @@ public:
   // crea la aligned_file_list, inserendo FileEntry vuoti come
   // placeholder per i buchi nella lista, quando mancano file presenti
   // nell'altro pannello.
-  void align_with(const std::vector<FileEntry>&);
+  void align_with(std::vector<FileEntry>& other_file_list);
   // Ricarica la raw_list
   void reload();
   // Restituisce la lista da visualizzare: la raw_list se sync_mode non 
@@ -21,6 +21,7 @@ public:
   const std::filesystem::path& get_current_path() const;
   std::string get_current_file_name() const;
   const std::vector<FileEntry>& get_raw_file_list() const;
+  std::vector<FileEntry>& get_raw_file_list();
   std::filesystem::path get_current_file_fullpath() const;
   Panel* get_aligned_panel();
   int get_selected_index() const;
@@ -55,5 +56,7 @@ private:
   bool active = false;
   
   bool has_sync_partner() const;
+  void compare_files(FileEntry&, FileEntry&);
+  size_t partial_hash(const std::filesystem::path &path, size_t bytes);
   bool show_hidden = false;
 };
