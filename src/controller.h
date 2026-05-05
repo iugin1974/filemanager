@@ -75,7 +75,6 @@ private:
   void go_back();
   void move_up();
   void move_down();
-  void sync_move(bool up);
   void toggle_tag_file();
 
   // --- Comandi ---

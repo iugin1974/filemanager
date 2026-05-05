@@ -27,7 +27,11 @@ std::string CommandBar::get_command() {
 
   int ch;
   while ((ch = wgetch(win)) != '\n') {
-
+    if (ch == 27) { // ESC
+      noecho();
+      cbreak();
+      return "";
+    }
     if (ch >= 32 && ch <= 126) {
       input.push_back(static_cast<char>(ch));
     } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {

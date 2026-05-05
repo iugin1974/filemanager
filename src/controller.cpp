@@ -77,11 +77,11 @@ int Controller::get_active_panel_index() {
 }
 
 int Controller::get_inactive_panel_index() const {
-  return panels[0].is_active() ? 0 : 1;
+  return panels[0].is_active() ? 1 : 0;
 }
 
 int Controller::get_inactive_panel_index() {
-  return panels[0].is_active() ? 0 : 1;
+  return panels[0].is_active() ? 1 : 0;
 }
 
 Panel &Controller::get_active_panel() {
@@ -161,7 +161,8 @@ bool Controller::handle_key(int ch) {
 
   case ':': {
     std::string cmd = get_command();
-    evaluate_command(cmd);
+    if (!cmd.empty())
+      evaluate_command(cmd);
     break;
   }
   case '$': {
@@ -243,16 +244,6 @@ void Controller::go_back() {
 
   if (moved)
     view.draw_panels();
-}
-
-void Controller::sync_move(bool sync) {
-  int other = (get_active_panel_index() == 0) ? 1 : 0;
-  sync ? panels[get_active_panel_index()].move_up()
-       : panels[get_active_panel_index()].move_down();
-  std::string name = panels[get_active_panel_index()].get_current_file_name();
-  int index = panels[other].contains(name);
-  if (index != -1)
-    panels[other].set_selected_index(index);
 }
 
 void Controller::move_up() {

@@ -14,7 +14,6 @@ Panel_view() : panel(nullptr), win(nullptr) {}
 
   private:
     int panel_number;
-    int get_offset();
     void draw_border(int, int);
     Panel* panel;
     StatusBar status_bar;
