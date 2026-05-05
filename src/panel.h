@@ -37,7 +37,8 @@ public:
   bool is_showing_hidden() const;
   FileEntry& get_file_at(int i);
   FileEntry& get_current_file();
-  const FileEntry& get_current_file() const;
+  const FileEntry& get_current_file() const; 
+  void update_selected_index();
   
   const std::vector<std::filesystem::path>& get_tagged_files() const;
   void tag_current_file(bool t);
@@ -52,7 +53,7 @@ private:
   std::vector<std::filesystem::path> tagged_files;
   int selected_index = 0;
   bool active = false;
-  void update_selected_index();
+  
   bool has_sync_partner() const;
   bool show_hidden = false;
 };

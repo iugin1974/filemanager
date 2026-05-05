@@ -39,8 +39,16 @@ void Controller::test()
     // Cambia directory nei due pannelli
     panels[0].change_dir("/tmp/A");
     panels[1].change_dir("/tmp/B");
-    sync_mode = true;
+    set_sync(true);
     align_panels();
+    reload_panels();
+    
+    move_down();
+    move_down();
+    move_down();
+    move_down();
+    view.draw_panels();
+    
     
 }
 
@@ -319,7 +327,11 @@ void Controller::evaluate_command(const std::string &cmd) {
   command.execute(cmd);
   for (int i = 0; i < 2; i++)
     panels[i].reload();
-  if (sync_mode) align_panels();
+  if (sync_mode) {
+    align_panels();
+    for (int i = 0; i < 2; i++)
+      panels[i].update_selected_index();
+  }
   view.draw_panels();
 }
 
