@@ -6,8 +6,7 @@
 
 Panel_view::Panel_view(Panel* p, int height, int width, int row, int col, int n)
   : panel(p),
-    status_bar(row + height, col, width),
-    command_bar(row + height + 1, width)
+    status_bar(row + height, col, width)
 {
     win = newwin(height, width, row, col);
     panel_number = n;
@@ -48,10 +47,6 @@ void Panel_view::set_offset(int o) {
  int height = getmaxy(win); 
   int max_offset = std::max(0, (int)(panel->get_file_list().size()) - height);
 offset = std::min(o, max_offset);
-}
-
-CommandBar& Panel_view::get_command_bar() {
-return command_bar;
 }
 
 Panel* Panel_view::get_panel() const {

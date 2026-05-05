@@ -2,13 +2,17 @@
 #include <ncurses.h>
 #include <string>
 
-CommandBar::CommandBar(int y_pos, int width) {
-  win = newwin(1, width, y_pos, 0);
-}
+CommandBar::CommandBar() {}
 
 CommandBar::~CommandBar() {
   if (win)
     delwin(win);
+}
+
+void CommandBar::init_bar(int y, int w) {
+  width = w;
+  y_pos = y;
+  win = newwin(1, width, y_pos, 0);
 }
 
 std::string CommandBar::get_command() {

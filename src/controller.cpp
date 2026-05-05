@@ -286,7 +286,7 @@ void Controller::jump_to_file(char ch) {
 
 void Controller::toggle_tag_file() {
   if (sync_mode) {
-   CommandBar &c = view.get_command_bar(get_active_panel_index());
+   CommandBar &c = view.get_command_bar();
     c.print_message("Tagging disabled in sync mode", CommandBar::ERROR);
     return;
   }
@@ -311,7 +311,7 @@ void Controller::sync_partner(bool sync) {
 // ---------------------------------------------------------------------------
 
 std::string Controller::get_command() {
-  return view.get_command_bar(get_active_panel_index()).get_command();
+  return view.get_command_bar().get_command();
 }
 
 void Controller::evaluate_command(const std::string &cmd) {
@@ -409,7 +409,7 @@ void Controller::mkdir(const std::string &name) {
   Panel &other = get_inactive_panel();
   std::filesystem::path active_dir = active.get_current_path() / name;
   if (std::filesystem::exists(active_dir)) {
-    view.get_command_bar(get_active_panel_index()).print_message("Directory already exists: " + name, CommandBar::ERROR);
+    view.get_command_bar().print_message("Directory already exists: " + name, CommandBar::ERROR);
     return;
   }
   MkdirOperation m;
@@ -479,7 +479,7 @@ void Controller::change_dir(const std::string &path) {
     full_path = get_active_panel().get_current_path() / path;
   }
   if (!std::filesystem::exists(full_path)) {
-    view.get_command_bar(get_active_panel_index()).print_message("Directory not exists", CommandBar::ERROR);
+    view.get_command_bar().print_message("Directory not exists", CommandBar::ERROR);
     return;
   }
   Panel &active = get_active_panel();
