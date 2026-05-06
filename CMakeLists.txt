@@ -22,7 +22,6 @@ set(SOURCES
   src/panel.cpp
   src/panel_view.cpp
   src/popup.cpp
-  src/rename_operation.cpp
   src/move_operation.cpp
   src/touch_operation.cpp
   src/status_bar.cpp
