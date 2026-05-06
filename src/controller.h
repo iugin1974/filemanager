@@ -42,6 +42,11 @@ public:
 
   // Ricarica il contenuto di entrambi i pannelli dal filesystem.
   void reload_panels();
+  
+  // sincronizza due file in sync_mode:
+  // se il file non esiste nell'altro pannello, viene copiato
+  // altrimenti il file più recente sovrascrive il più vecchio
+  void sync_file();
 
 private:
   void test();

@@ -1,13 +1,11 @@
 #pragma once
 
 #include "operation.h"
-#include <filesystem>
+#include "file_entry.h"
 #include <string>
 
 class CopyOperation : public Operation {
 public:
-    void execute(const std::filesystem::path& path) override;
-    void execute(const std::filesystem::path& path1,
-                 const std::filesystem::path& path2) override;
-        
+    void execute(const FileEntry& entry) override;
+    void execute(const FileEntry& source, const FileEntry& dest) override;
 };

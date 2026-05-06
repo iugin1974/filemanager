@@ -1,12 +1,15 @@
 #include "move_operation.h"
-#include <filesystem>
+#include "file_entry.h"
 
-void MoveOperation::execute(const std::filesystem::path&) {
+void MoveOperation::execute(const FileEntry&) {
 }
 
-void MoveOperation::execute(const std::filesystem::path& path,
-                               const std::filesystem::path& path2) {
-        std::filesystem::copy(path, path2, std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
-        std::filesystem::remove_all(path);
+void MoveOperation::execute(const FileEntry& source, const FileEntry& dest) {
+    std::filesystem::copy(
+        source.get_path(),
+        dest.get_path(),
+        std::filesystem::copy_options::overwrite_existing |
+        std::filesystem::copy_options::recursive
+    );
+    std::filesystem::remove_all(source.get_path());
 }
-

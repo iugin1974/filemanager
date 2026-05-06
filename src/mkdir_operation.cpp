@@ -1,11 +1,10 @@
 #include "mkdir_operation.h"
-#include <filesystem>
+#include "file_entry.h"
 
-void MkdirOperation::execute(const std::filesystem::path& path) {
-    std::filesystem::create_directory(path);
+void MkdirOperation::execute(const FileEntry& entry) {
+    std::filesystem::create_directory(entry.get_path());
 }
 
-void MkdirOperation::execute(const std::filesystem::path&,
-                               const std::filesystem::path&) {
+void MkdirOperation::execute(const FileEntry&, const FileEntry&) {
     // non usato per mkdir
 }

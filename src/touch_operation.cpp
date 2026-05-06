@@ -1,13 +1,11 @@
 #include "touch_operation.h"
-#include <filesystem>
+#include "file_entry.h"
 #include <fstream>
 
-void TouchOperation::execute(const std::filesystem::path& path) {
-    std::ofstream file(path);    
+void TouchOperation::execute(const FileEntry& entry) {
+    std::ofstream file(entry.get_path());
 }
 
-void TouchOperation::execute(const std::filesystem::path&,
-                              const std::filesystem::path&) {
+void TouchOperation::execute(const FileEntry&, const FileEntry&) {
     // non usato per touch
-                              }
-                              
+}

@@ -11,8 +11,20 @@ enum class SyncStatus { NONE, SAME, NEWER, OLDER };
 class FileEntry {
   public:
 
+    // FileEntry deve essere sempre costruita DOPO che il file esiste sul disco.
+// Non costruire FileEntry su path inesistenti: last_write_time non sarebbe disponibile.
+// Sequenza corretta:
+//   1. Crea il file/directory (TouchOperation, MkdirOperation, ecc.)
+//   2. Costruisci FileEntry sul path appena creato
     FileEntry(const std::filesystem::directory_entry& entry);
+    // FileEntry deve essere sempre costruita DOPO che il file esiste sul disco.
+// Non costruire FileEntry su path inesistenti: last_write_time non sarebbe disponibile.
+// Sequenza corretta:
+//   1. Crea il file/directory (TouchOperation, MkdirOperation, ecc.)
+//   2. Costruisci FileEntry sul path appena creato
+    FileEntry(const std::filesystem::path& path);
     FileEntry() : placeholder(true) {};
+    bool operator==(const FileEntry& other) const;
     void print(WINDOW* win, int row, bool selected, int width, bool active_panel) const;
     bool is_directory() const;
     std::filesystem::path get_path() const;

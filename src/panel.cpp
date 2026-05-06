@@ -254,10 +254,10 @@ void Panel::tag_current_file(bool t) {
   fe.tag(t);
 
   if (t) {
-    tagged_files.push_back(fe.get_path());
+    tagged_files.push_back(fe);
   } else {
     for (auto it = tagged_files.begin(); it != tagged_files.end(); it++) {
-      if (*it == fe.get_path()) {
+      if (*it == fe) {
         it = tagged_files.erase(it);
         return;
       }
@@ -272,11 +272,11 @@ void Panel::toggle_tag_current_file() {
   tag_current_file(!get_current_file().is_tagged());
 }
 
-const std::vector<std::filesystem::path> &Panel::get_tagged_files() const {
+const std::vector<FileEntry> &Panel::get_tagged_files() const {
   return tagged_files;
 }
 
-std::vector<std::filesystem::path> Panel::get_files_to_operate() const {
+std::vector<FileEntry> Panel::get_files_to_operate() const {
   if (!tagged_files.empty())
     return tagged_files;
   if (get_file_list().empty())
@@ -285,7 +285,7 @@ std::vector<std::filesystem::path> Panel::get_files_to_operate() const {
   const FileEntry &fe = get_current_file();
   if (fe.is_placeholder())
     return {};
-  return {fe.get_path()};
+  return {fe};
 }
 
 bool Panel::has_sync_partner() const { return sync_partner != nullptr; }

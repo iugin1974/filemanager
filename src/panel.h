@@ -39,22 +39,21 @@ public:
   FileEntry& get_file_at(int i);
   FileEntry& get_current_file();
   const FileEntry& get_current_file() const; 
-  void update_selected_index();
-  
-  const std::vector<std::filesystem::path>& get_tagged_files() const;
+  void update_selected_index();  
+  const std::vector<FileEntry>& get_tagged_files() const;
   void tag_current_file(bool t);
   void toggle_tag_current_file();
-  std::vector<std::filesystem::path> get_files_to_operate() const;
+  std::vector<FileEntry> get_files_to_operate() const;
+  
 private:
   Panel* sync_partner = nullptr;
   std::stack<std::filesystem::path> path_history;
   std::filesystem::path current_path;
   std::vector<FileEntry> raw_file_list;
   std::vector<FileEntry> aligned_file_list;
-  std::vector<std::filesystem::path> tagged_files;
+  std::vector<FileEntry> tagged_files;
   int selected_index = 0;
-  bool active = false;
-  
+  bool active = false;  
   bool has_sync_partner() const;
   void compare_files(FileEntry&, FileEntry&);
   size_t partial_hash(const std::filesystem::path &path, size_t bytes);

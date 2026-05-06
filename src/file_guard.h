@@ -1,16 +1,14 @@
 #pragma once
 
-#include <filesystem>
+#include "file_entry.h"
 
 class FileGuard {
 public:
-static bool confirm_overwrite(const std::filesystem::path& source,
-                                const std::filesystem::path& dest);
-static bool confirm_overwrite(const std::filesystem::path& source);
-static bool confirm_delete(const std::filesystem::path& path, const std::filesystem::path& path2);
-static bool confirm_delete(const std::filesystem::path& path);
+  static bool confirm_overwrite(const FileEntry &source, const FileEntry &dest);
+  static bool confirm_overwrite(const FileEntry &source);
+  static bool confirm_delete(const FileEntry &entry);
+  static bool confirm_delete(const FileEntry &entry1, const FileEntry &entry2);
 
 private:
-
-static std::string file_info(const std::filesystem::path& p);
+  static std::string file_info(const FileEntry &entry);
 };

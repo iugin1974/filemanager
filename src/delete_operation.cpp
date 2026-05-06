@@ -1,11 +1,10 @@
 #include "delete_operation.h"
-#include <filesystem>
+#include "file_entry.h"
 
-void DeleteOperation::execute(const std::filesystem::path& path) {
-    std::filesystem::remove_all(path);
+void DeleteOperation::execute(const FileEntry& entry) {
+    std::filesystem::remove_all(entry.get_path());
 }
 
-void DeleteOperation::execute(const std::filesystem::path&,
-                               const std::filesystem::path&) {
+void DeleteOperation::execute(const FileEntry&, const FileEntry&) {
     // non usato per delete
 }

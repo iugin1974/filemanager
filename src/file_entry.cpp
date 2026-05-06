@@ -6,7 +6,17 @@
     
 FileEntry::FileEntry(const std::filesystem::directory_entry& entry) {
     this->entry = entry;
-    last_write_time = entry.last_write_time();
+    if (entry.exists())
+        last_write_time = entry.last_write_time();
+    else
+        last_write_time = std::filesystem::file_time_type{};
+}
+
+FileEntry::FileEntry(const std::filesystem::path& path)
+    : FileEntry(std::filesystem::directory_entry(path)) {}
+    
+bool FileEntry::operator==(const FileEntry& other) const {
+    return entry.path() == other.entry.path();
 }
 
 void FileEntry::print(WINDOW* win, int row, bool selected, int width, bool active_panel) const {

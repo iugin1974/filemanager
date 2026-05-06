@@ -1,14 +1,16 @@
 #include "copy_operation.h"
-#include <filesystem>
+#include "file_entry.h"
 #include <string>
 #include "popup.h"
 
-void CopyOperation::execute(const std::filesystem::path&) {
+void CopyOperation::execute(const FileEntry&) {
 }
-// non usato per copy
 
-void CopyOperation::execute(const std::filesystem::path& path,
-                               const std::filesystem::path& path2) {
-std::filesystem::copy(path, path2, std::filesystem::copy_options::overwrite_existing | std::filesystem::copy_options::recursive);
-                                   
+void CopyOperation::execute(const FileEntry& source, const FileEntry& dest) {
+    std::filesystem::copy(
+        source.get_path(),
+        dest.get_path(),
+        std::filesystem::copy_options::overwrite_existing |
+        std::filesystem::copy_options::recursive
+    );
 }
