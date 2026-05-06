@@ -9,21 +9,29 @@ FileEntry::FileEntry(const std::filesystem::directory_entry& entry) {
     last_write_time = entry.last_write_time();
 }
 
-void FileEntry::print(WINDOW* win, int row, bool selected) const {
-    if (selected) wattron(win, A_REVERSE);
+void FileEntry::print(WINDOW* win, int row, bool selected, int width, bool active_panel) const {
+    // Prima riempiamo tutta la riga con spazi in reverse se selezionato
+    if (selected && active_panel) {
+        wattron(win, A_REVERSE);
+        mvwhline(win, row, 0, ' ', width);
+    }
+
     if (entry.is_directory()) {
         wattron(win, COLOR_PAIR(1));
         wattron(win, A_BOLD);
     }
+
     if (sync_status == SyncStatus::NEWER) {
-     wattron(win, COLOR_PAIR(2));   
-    } else
-        if (sync_status == SyncStatus::OLDER) {
-            wattron(win, COLOR_PAIR(4));
-        } 
+        wattron(win, COLOR_PAIR(2));
+    } else if (sync_status == SyncStatus::OLDER) {
+        wattron(win, COLOR_PAIR(4));
+    }
+
     if (tagged)
         mvwprintw(win, row, 0, "*");
+
     mvwprintw(win, row, 1, "%s", entry.path().filename().string().c_str());
+
     wattroff(win, A_REVERSE | A_BOLD);
     wattroff(win, A_COLOR);
 }

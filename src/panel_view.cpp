@@ -30,7 +30,7 @@ void Panel_view::draw() {
 
   for (int i = 0; i < visible; i++) {
     bool is_selected = (i + offset == selected);
-    files[i + offset].print(win, i, is_selected);
+    files[i + offset].print(win, i, is_selected, width, panel->is_active());
   }
   
   if (panel->get_file_list().size() > 0)

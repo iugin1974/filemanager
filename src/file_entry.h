@@ -13,7 +13,7 @@ class FileEntry {
 
     FileEntry(const std::filesystem::directory_entry& entry);
     FileEntry() : placeholder(true) {};
-    void print(WINDOW* win, int row, bool selected) const;
+    void print(WINDOW* win, int row, bool selected, int width, bool active_panel) const;
     bool is_directory() const;
     std::filesystem::path get_path() const;
     const std::string get_name() const; 
