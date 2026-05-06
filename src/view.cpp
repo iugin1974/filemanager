@@ -15,9 +15,9 @@ void View::init_panels(Panel *left, Panel *right) {
   panels[1] = std::make_unique<Panel_view>(right, height - 2, width / 2, 0, width / 2, 1);
 }
 
-void View::draw_panels() {
+void View::draw_panels(bool sync_mode) {
   for (int i = 0; i < 2; i++) {
-    panels[i]->draw();
+    panels[i]->draw(sync_mode);
   }
 }
 

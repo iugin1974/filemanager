@@ -22,7 +22,7 @@ class FileEntry {
 // Sequenza corretta:
 //   1. Crea il file/directory (TouchOperation, MkdirOperation, ecc.)
 //   2. Costruisci FileEntry sul path appena creato
-    FileEntry(const std::filesystem::path& path);
+    explicit FileEntry(const std::filesystem::path& path);
     FileEntry() : placeholder(true) {};
     bool operator==(const FileEntry& other) const;
     void print(WINDOW* win, int row, bool selected, int width, bool active_panel) const;
@@ -36,6 +36,7 @@ class FileEntry {
     const std::filesystem::file_time_type& get_last_write_time() const;
     void set_sync_status(SyncStatus s);
     SyncStatus get_sync_status() const;
+    bool exists();
   private:
     std::filesystem::directory_entry entry;
     bool tagged = false;

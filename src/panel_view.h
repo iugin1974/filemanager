@@ -8,7 +8,7 @@ class Panel_view {
   public:
 Panel_view() : panel(nullptr), win(nullptr) {}
     Panel_view(Panel* panel, int height, int width, int row, int col, int n);
-    void draw();
+    void draw(bool sync_mode);
     Panel* get_panel() const;
     void set_offset(int o);
 

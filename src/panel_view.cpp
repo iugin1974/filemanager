@@ -12,7 +12,7 @@ Panel_view::Panel_view(Panel* p, int height, int width, int row, int col, int n)
     panel_number = n;
 }
 
-void Panel_view::draw() {
+void Panel_view::draw(bool sync_mode) {
   int height, width;
   getmaxyx(win, height, width);
 
@@ -30,7 +30,7 @@ void Panel_view::draw() {
 
   for (int i = 0; i < visible; i++) {
     bool is_selected = (i + offset == selected);
-    files[i + offset].print(win, i, is_selected, width, panel->is_active());
+    files[i + offset].print(win, i, is_selected, width, sync_mode || panel->is_active());
   }
   
   if (panel->get_file_list().size() > 0)

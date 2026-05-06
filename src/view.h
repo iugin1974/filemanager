@@ -11,7 +11,7 @@ public:
   View();
   void init_panels(Panel *, Panel *);
   void add_panel(Panel &p);
-  void draw_panels();
+  void draw_panels(bool sync_mode);
   CommandBar &get_command_bar();
   void set_offset(const Panel &p, int o);
 
