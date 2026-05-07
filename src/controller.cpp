@@ -128,11 +128,11 @@ bool Controller::handle_key(int ch) {
     break;
 
   case KEY_LEFT:
-    go_up();
+    go_left();
     break;
 
   case KEY_RIGHT:
-    go_back();
+    go_right();
     break;
 
   case KEY_ENTER:
@@ -215,11 +215,11 @@ void Controller::enter_pressed() {
   }
 }
 
-void Controller::go_up() {
+void Controller::go_left() {
   bool moved = false;
 
   for_active_panels([&moved](Panel &p, int) {
-    bool ok = p.go_up();
+    bool ok = p.go_left();
     moved = moved || ok;
   });
 
@@ -229,11 +229,11 @@ void Controller::go_up() {
   }
 }
 
-void Controller::go_back() {
+void Controller::go_right() {
   bool moved = false;
 
   for_active_panels([&moved](Panel &p, int) {
-    bool ok = p.go_back();
+    bool ok = p.go_right();
     moved = moved || ok;
   });
 
@@ -505,7 +505,7 @@ void Controller::move_file() {
 
 void Controller::change_dir(const std::string &path) {
   if (path == "..") {
-    go_up();
+    go_left();
     return;
   }
   std::filesystem::path full_path;

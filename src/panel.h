@@ -1,4 +1,5 @@
 #pragma once
+#include "history.h"
 #include <filesystem>
 #include <vector>
 #include "file_entry.h"
@@ -29,8 +30,8 @@ public:
   void move_up();
   void move_down();
   const FileEntry& get_file(int) const;
-  bool go_up();
-  bool go_back();
+  bool go_left();
+  bool go_right();
   bool is_active() const;
   void set_active(bool);
   int contains(const std::string& name) const;
@@ -47,7 +48,7 @@ public:
   
 private:
   Panel* sync_partner = nullptr;
-  std::stack<std::filesystem::path> path_history;
+  History history;
   std::filesystem::path current_path;
   std::vector<FileEntry> raw_file_list;
   std::vector<FileEntry> aligned_file_list;

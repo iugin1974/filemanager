@@ -1,5 +1,7 @@
 #include "panel.h"
 #include "file_entry.h"
+#include "history.h"
+#include "history_element.h"
 #include <algorithm>
 #include <cassert>
 #include <filesystem>
@@ -7,7 +9,11 @@
 #include <stack>
 #include <vector>
 
-Panel::Panel() { current_path = std::getenv("HOME"); }
+Panel::Panel() {
+  current_path = std::getenv("HOME");
+  history.put_element(HistoryElement(current_path));
+  selected_index = 0;
+}
 
 void Panel::set_sync_partner(Panel *p) {
   sync_partner = p;
@@ -16,8 +22,12 @@ void Panel::set_sync_partner(Panel *p) {
 }
 
 void Panel::change_dir(const std::filesystem::path &path) {
+  history.print("change_dir: 1");
+  history.set_current_file_index(selected_index);
   current_path = path;
   selected_index = 0;
+  history.put_element(HistoryElement(current_path));
+  history.print("change_dir: 2");
   reload();
 }
 
@@ -54,52 +64,53 @@ void Panel::align_with(std::vector<FileEntry> &other_file_list) {
 }
 
 void Panel::compare_files(FileEntry &a, FileEntry &b) {
-    if (a.is_directory() || b.is_directory()) {
-        a.set_sync_status(SyncStatus::NONE);
-        b.set_sync_status(SyncStatus::NONE);
-        return;
+  if (a.is_directory() || b.is_directory()) {
+    a.set_sync_status(SyncStatus::NONE);
+    b.set_sync_status(SyncStatus::NONE);
+    return;
+  }
+  try {
+    auto size_a = std::filesystem::file_size(a.get_path());
+    auto size_b = std::filesystem::file_size(b.get_path());
+    bool different = false;
+    if (size_a != size_b) {
+      different = true;
+    } else {
+      // hash parziale 8KB
+      auto hash_a = partial_hash(a.get_path(), 8192);
+      auto hash_b = partial_hash(b.get_path(), 8192);
+      if (hash_a != hash_b)
+        different = true;
     }
-    try {
-        auto size_a = std::filesystem::file_size(a.get_path());
-        auto size_b = std::filesystem::file_size(b.get_path());
-        bool different = false;
-        if (size_a != size_b) {
-            different = true;
-        } else {
-            // hash parziale 8KB
-            auto hash_a = partial_hash(a.get_path(), 8192);
-            auto hash_b = partial_hash(b.get_path(), 8192);
-            if (hash_a != hash_b)
-                different = true;
-        }
-        if (!different) {
-            a.set_sync_status(SyncStatus::SAME);
-            b.set_sync_status(SyncStatus::SAME);
-            return;
-        }
-        // diversi: confronta data
-        auto time_a = std::filesystem::last_write_time(a.get_path());
-        auto time_b = std::filesystem::last_write_time(b.get_path());
-        if (time_a > time_b) {
-            a.set_sync_status(SyncStatus::NEWER);
-            b.set_sync_status(SyncStatus::OLDER);
-        } else {
-            a.set_sync_status(SyncStatus::OLDER);
-            b.set_sync_status(SyncStatus::NEWER);
-        }
-    } catch (const std::filesystem::filesystem_error&) {
-        a.set_sync_status(SyncStatus::NONE);
-        b.set_sync_status(SyncStatus::NONE);
+    if (!different) {
+      a.set_sync_status(SyncStatus::SAME);
+      b.set_sync_status(SyncStatus::SAME);
+      return;
     }
+    // diversi: confronta data
+    auto time_a = std::filesystem::last_write_time(a.get_path());
+    auto time_b = std::filesystem::last_write_time(b.get_path());
+    if (time_a > time_b) {
+      a.set_sync_status(SyncStatus::NEWER);
+      b.set_sync_status(SyncStatus::OLDER);
+    } else {
+      a.set_sync_status(SyncStatus::OLDER);
+      b.set_sync_status(SyncStatus::NEWER);
+    }
+  } catch (const std::filesystem::filesystem_error &) {
+    a.set_sync_status(SyncStatus::NONE);
+    b.set_sync_status(SyncStatus::NONE);
+  }
 }
 
 size_t Panel::partial_hash(const std::filesystem::path &path, size_t bytes) {
-    std::ifstream f(path, std::ios::binary);
-    if (!f) return 0;
-    std::vector<char> buf(bytes);
-    f.read(buf.data(), bytes);
-    size_t read = f.gcount();
-    return std::hash<std::string_view>{}(std::string_view(buf.data(), read));
+  std::ifstream f(path, std::ios::binary);
+  if (!f)
+    return 0;
+  std::vector<char> buf(bytes);
+  f.read(buf.data(), bytes);
+  size_t read = f.gcount();
+  return std::hash<std::string_view>{}(std::string_view(buf.data(), read));
 }
 
 void Panel::reload() {
@@ -205,29 +216,33 @@ const std::vector<FileEntry> &Panel::get_raw_file_list() const {
   return raw_file_list;
 }
 
-std::vector<FileEntry> &Panel::get_raw_file_list() {
-  return raw_file_list;
-}
+std::vector<FileEntry> &Panel::get_raw_file_list() { return raw_file_list; }
 
 const FileEntry &Panel::get_file(int i) const { return get_file_list().at(i); }
 
 Panel *Panel::get_aligned_panel() { return sync_partner; }
 
-bool Panel::go_up() {
-  if (current_path != current_path.parent_path()) {
-    path_history.push(current_path);
-    current_path = current_path.parent_path();
-    change_dir(current_path);
+bool Panel::go_left() {
+  if (history.can_go_left()) {
+    history.print("go_left: 1");
+    const HistoryElement &e = history.move_left();
+    current_path = e.get_path();
+    selected_index = e.get_selected_index();
+    history.print("go_left: 1");
+    reload();
     return true;
   }
   return false;
 }
 
-bool Panel::go_back() {
-  if (path_history.size() > 0) {
-    current_path = path_history.top();
-    path_history.pop();
-    change_dir(current_path);
+bool Panel::go_right() {
+  if (history.can_go_right()) {
+    history.print("go_right: 1");
+    const HistoryElement &e = history.move_right();
+    current_path = e.get_path();
+    selected_index = e.get_selected_index();
+    history.print("go_right: 2");
+    reload();
     return true;
   }
   return false;
