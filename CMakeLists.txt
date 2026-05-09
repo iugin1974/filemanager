@@ -27,6 +27,8 @@ set(SOURCES
   src/status_bar.cpp
   src/view.cpp
   src/file_guard.cpp
+  src/history_element.cpp
+  src/history.cpp
 )
 
 add_executable(fm ${SOURCES})

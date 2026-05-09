@@ -18,7 +18,7 @@ bool empty() const;
 bool is_at_end() const;
 bool can_go_left() const;
 bool can_go_right() const;
-void print(std::string msg) const;
+void print(std::string msg, int) const;
 HistoryElement& last();
 void set_current_file_index(int i);
 

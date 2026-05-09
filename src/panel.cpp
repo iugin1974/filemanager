@@ -9,10 +9,11 @@
 #include <stack>
 #include <vector>
 
-Panel::Panel() {
+Panel::Panel(int i) {
   current_path = std::getenv("HOME");
   history.put_element(HistoryElement(current_path));
   selected_index = 0;
+  id = i;
 }
 
 void Panel::set_sync_partner(Panel *p) {
@@ -22,12 +23,12 @@ void Panel::set_sync_partner(Panel *p) {
 }
 
 void Panel::change_dir(const std::filesystem::path &path) {
-  history.print("change_dir: 1");
+  history.print("change_dir: 1", id);
   history.set_current_file_index(selected_index);
   current_path = path;
   selected_index = 0;
   history.put_element(HistoryElement(current_path));
-  history.print("change_dir: 2");
+  history.print("change_dir: 2", id);
   reload();
 }
 
@@ -224,11 +225,11 @@ Panel *Panel::get_aligned_panel() { return sync_partner; }
 
 bool Panel::go_left() {
   if (history.can_go_left()) {
-    history.print("go_left: 1");
+    history.print("go_left: 1", id);
     const HistoryElement &e = history.move_left();
     current_path = e.get_path();
     selected_index = e.get_selected_index();
-    history.print("go_left: 1");
+    history.print("go_left: 1", id);
     reload();
     return true;
   }
@@ -237,11 +238,11 @@ bool Panel::go_left() {
 
 bool Panel::go_right() {
   if (history.can_go_right()) {
-    history.print("go_right: 1");
+    history.print("go_right: 1", id);
     const HistoryElement &e = history.move_right();
     current_path = e.get_path();
     selected_index = e.get_selected_index();
-    history.print("go_right: 2");
+    history.print("go_right: 2", id);
     reload();
     return true;
   }

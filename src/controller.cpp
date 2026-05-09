@@ -50,13 +50,14 @@ void Controller::test() {
 // ---------------------------------------------------------------------------
 // Costruttore
 // ---------------------------------------------------------------------------
-
-Controller::Controller(View &view) : view(view) {
-  reload_panels();
-  panels[0].set_active(true);
-  view.init_panels(&panels[0], &panels[1]);
-  // test();
-  view.draw_panels(sync_mode);
+Controller::Controller(View &view)
+    : view(view),
+      panels{{1, 2}}
+{
+    reload_panels();
+    panels[0].set_active(true);
+    view.init_panels(&panels[0], &panels[1]);
+    view.draw_panels(sync_mode);
 }
 
 // ---------------------------------------------------------------------------
@@ -237,8 +238,10 @@ void Controller::go_right() {
     moved = moved || ok;
   });
 
-  if (moved)
+  if (moved) {
+    align_panels();
     view.draw_panels(sync_mode);
+  }
 }
 
 void Controller::move_up() {

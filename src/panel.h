@@ -7,7 +7,7 @@
 
 class Panel {
 public:
-  Panel();
+  Panel(int);
   void change_dir(const std::filesystem::path& path);
   void set_sync_partner(Panel* p);
   // crea la aligned_file_list, inserendo FileEntry vuoti come
@@ -59,4 +59,5 @@ private:
   void compare_files(FileEntry&, FileEntry&);
   size_t partial_hash(const std::filesystem::path &path, size_t bytes);
   bool show_hidden = false;
+  int id;
 };
