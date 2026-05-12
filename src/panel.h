@@ -16,7 +16,7 @@ public:
   void align_with(std::vector<FileEntry>& other_file_list);
   // Ricarica la raw_list
   void reload();
-  // Restituisce la lista da visualizzare: la raw_list se sync_mode non 
+  // Restituisce la lista da visualizzare: la raw_list se sync_mode non
   // è attivo, altrimenti la aligned_list.
   const std::vector<FileEntry>& get_file_list() const;
   const std::filesystem::path& get_current_path() const;
@@ -30,6 +30,7 @@ public:
   void move_up();
   void move_down();
   const FileEntry& get_file(int) const;
+  bool go_up();
   bool go_left();
   bool go_right();
   void select_first();
@@ -41,13 +42,13 @@ public:
   bool is_showing_hidden() const;
   FileEntry& get_file_at(int i);
   FileEntry& get_current_file();
-  const FileEntry& get_current_file() const; 
-  void update_selected_index();  
+  const FileEntry& get_current_file() const;
+  void update_selected_index();
   const std::vector<FileEntry>& get_tagged_files() const;
   void tag_current_file(bool t);
   void toggle_tag_current_file();
   std::vector<FileEntry> get_files_to_operate() const;
-  
+
 private:
   Panel* sync_partner = nullptr;
   History history;
@@ -56,7 +57,7 @@ private:
   std::vector<FileEntry> aligned_file_list;
   std::vector<FileEntry> tagged_files;
   int selected_index = 0;
-  bool active = false;  
+  bool active = false;
   bool has_sync_partner() const;
   void compare_files(FileEntry&, FileEntry&);
   size_t partial_hash(const std::filesystem::path &path, size_t bytes);

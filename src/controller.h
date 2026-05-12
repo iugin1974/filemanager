@@ -30,7 +30,7 @@ public:
 
   // Sposta il file selezionato (o i file taggati) nel pannello inattivo.
   void move_file();
-  
+
   // Cambia la directory corrente
   void change_dir(const std::string &);
 
@@ -42,7 +42,7 @@ public:
 
   // Ricarica il contenuto di entrambi i pannelli dal filesystem.
   void reload_panels();
-  
+
   // sincronizza due file in sync_mode:
   // se il file non esiste nell'altro pannello, viene copiato
   // altrimenti il file più recente sovrascrive il più vecchio
@@ -50,7 +50,7 @@ public:
 
 private:
   void test();
-  
+
   bool exit = false;
 
   // --- Stato ---
@@ -76,6 +76,7 @@ private:
 
   // --- Azioni ---
   void enter_pressed();
+  void go_up();
   void go_left();
   void go_right();
   void go_first();

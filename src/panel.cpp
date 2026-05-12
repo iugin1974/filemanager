@@ -175,11 +175,11 @@ int Panel::get_selected_index() const { return selected_index; }
 void Panel::set_selected_index(int i) { selected_index = i; }
 
 void Panel::select_first() {
-if (get_file_list().size() > 0) set_selected_index(0);  
+if (get_file_list().size() > 0) set_selected_index(0);
 }
 
 void Panel::select_last() {
- if (get_file_list().size() >0) set_selected_index(get_file_list().size() - 1); 
+ if (get_file_list().size() >0) set_selected_index(get_file_list().size() - 1);
 }
 
 void Panel::update_selected_index() {
@@ -230,6 +230,17 @@ std::vector<FileEntry> &Panel::get_raw_file_list() { return raw_file_list; }
 const FileEntry &Panel::get_file(int i) const { return get_file_list().at(i); }
 
 Panel *Panel::get_aligned_panel() { return sync_partner; }
+
+bool Panel::go_up() {
+ std::filesystem::path parent = current_path.parent_path();
+ // Il check parent != current_path serve perché su /, parent_path() ritorna / stesso
+ if (parent != current_path) {  // evita loop su /
+        change_dir(parent);
+        return true;
+        reload();
+    }
+ return false;
+}
 
 bool Panel::go_left() {
   if (history.can_go_left()) {
