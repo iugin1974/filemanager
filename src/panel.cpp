@@ -174,6 +174,14 @@ int Panel::get_selected_index() const { return selected_index; }
 
 void Panel::set_selected_index(int i) { selected_index = i; }
 
+void Panel::select_first() {
+if (get_file_list().size() > 0) set_selected_index(0);  
+}
+
+void Panel::select_last() {
+ if (get_file_list().size() >0) set_selected_index(get_file_list().size() - 1); 
+}
+
 void Panel::update_selected_index() {
   if (selected_index >= static_cast<int>(get_file_list().size()))
     selected_index = static_cast<int>(get_file_list().size()) - 1;

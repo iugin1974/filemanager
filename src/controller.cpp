@@ -135,6 +135,14 @@ bool Controller::handle_key(int ch) {
   case KEY_RIGHT:
     go_right();
     break;
+    
+  case KEY_HOME:
+    go_first();
+    break;
+    
+  case KEY_END:
+    go_last();
+    break;
 
   case KEY_ENTER:
   case 10:
@@ -242,6 +250,18 @@ void Controller::go_right() {
     align_panels();
     view.draw_panels(sync_mode);
   }
+}
+
+void Controller::go_first() {
+  for_active_panels([](Panel &p, int) {
+  p.select_first();
+  });
+}
+
+void Controller::go_last() {
+  for_active_panels([](Panel &p, int) {
+  p.select_last();
+  });
 }
 
 void Controller::move_up() {

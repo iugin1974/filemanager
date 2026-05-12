@@ -32,6 +32,8 @@ public:
   const FileEntry& get_file(int) const;
   bool go_left();
   bool go_right();
+  void select_first();
+  void select_last();
   bool is_active() const;
   void set_active(bool);
   int contains(const std::string& name) const;

@@ -78,6 +78,8 @@ private:
   void enter_pressed();
   void go_left();
   void go_right();
+  void go_first();
+  void go_last();
   void move_up();
   void move_down();
   void toggle_tag_file();
