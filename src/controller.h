@@ -9,7 +9,8 @@
 class Controller {
 public:
   explicit Controller(View &view);
-
+void init();
+void on_resize();
   // Processa un tasto. Restituisce true se l'utente ha richiesto l'uscita.
   bool handle_key(int ch);
 

@@ -5,14 +5,18 @@
 #include <memory>
 #include <ncurses.h>
 
-View::View() {
+View::View() { init(); }
+
+void View::init() {
   getmaxyx(stdscr, height, width);
   command_bar.init_bar(height - 1, width);
 }
 
 void View::init_panels(Panel *left, Panel *right) {
-  panels[0] = std::make_unique<Panel_view>(left, height - 2, width / 2, 0, 0, 0);
-  panels[1] = std::make_unique<Panel_view>(right, height - 2, width / 2, 0, width / 2, 1);
+  panels[0] =
+      std::make_unique<Panel_view>(left, height - 2, width / 2, 0, 0, 0);
+  panels[1] = std::make_unique<Panel_view>(right, height - 2, width / 2, 0,
+                                           width / 2, 1);
 }
 
 void View::draw_panels(bool sync_mode) {
@@ -30,6 +34,4 @@ void View::set_offset(const Panel &p, int o) {
   }
 }
 
-CommandBar &View::get_command_bar() {
-  return command_bar;
-}
+CommandBar &View::get_command_bar() { return command_bar; }

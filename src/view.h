@@ -9,6 +9,7 @@
 class View {
 public:
   View();
+  void init();
   void init_panels(Panel *, Panel *);
   void add_panel(Panel &p);
   void draw_panels(bool sync_mode);

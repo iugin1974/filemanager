@@ -54,12 +54,21 @@ Controller::Controller(View &view)
   : view(view),
   panels{{1, 2}}
 {
-  reload_panels();
-  panels[0].set_active(true);
-  view.init_panels(&panels[0], &panels[1]);
-  view.draw_panels(sync_mode);
+init();
 }
 
+void Controller::init() {           
+  reload_panels();
+    panels[0].set_active(true);
+    view.init_panels(&panels[0], &panels[1]);
+    view.draw_panels(sync_mode);
+}
+
+void Controller::on_resize() {
+    view.init();                              // ricalcola dimensioni
+    view.init_panels(&panels[0], &panels[1]); // ricrea Panel_view
+    view.draw_panels(sync_mode);              // ridisegna
+}
 // ---------------------------------------------------------------------------
 // Helpers privati
 // ---------------------------------------------------------------------------
