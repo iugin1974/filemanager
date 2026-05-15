@@ -40,10 +40,10 @@ void Controller::test() {
   align_panels();
   reload_panels();
 
-  move_down();
-  move_down();
-  move_down();
-  move_down();
+  move(1,1);
+  move(1,1);
+  move(1,1);
+  move(1,1);
   view.draw_panels(sync_mode);
 }
 
@@ -129,12 +129,20 @@ template <typename Fn> void Controller::for_active_panels(Fn fn) {
 
 bool Controller::handle_key(int ch) {
   switch (ch) {
+    case KEY_NPAGE:
+      move(1, view.get_height());
+      break;
+
+    case KEY_PPAGE:
+      move(-1, view.get_height());
+      break;
+
     case KEY_UP:
-      move_up();
+      move(-1, 1);
       break;
 
     case KEY_DOWN:
-      move_down();
+      move(1, 1);
       break;
 
     case KEY_LEFT:
@@ -289,12 +297,11 @@ void Controller::go_last() {
       });
 }
 
-void Controller::move_up() {
-  for_active_panels([](Panel &p, int) { p.move_up(); });
-}
-
-void Controller::move_down() {
-  for_active_panels([](Panel &p, int) { p.move_down(); });
+void Controller::move(int direction, int lines) {
+  if (direction == -1)
+  for_active_panels([lines](Panel &p, int) { p.move_up(lines); });
+  else if (direction == 1)
+  for_active_panels([lines](Panel &p, int) { p.move_down(lines); });
 }
 
 void Controller::jump_to_file(char ch) {
@@ -334,7 +341,7 @@ void Controller::toggle_tag_file() {
   }
   Panel &p = panels.at(get_active_panel_index());
   p.toggle_tag_current_file();
-  p.move_down();
+  p.move_down(1);
   view.draw_panels(sync_mode);
 }
 
@@ -369,6 +376,7 @@ void Controller::evaluate_command(const std::string &cmd) {
   view.draw_panels(sync_mode);
 }
 
+// TODO controllare le condizioni di avvio di sync-mode
 void Controller::set_sync(bool sync) {
   if (!sync) {
     sync_mode = false;
@@ -402,6 +410,7 @@ void Controller::align_panels() {
   panels[1].align_with(panels[0].get_raw_file_list());
 }
 
+// TODO controlla il remove con sync mode attivato
 void Controller::delete_file(bool silent) {
   Panel &active = get_active_panel();
   Panel &other = get_inactive_panel();
@@ -453,6 +462,7 @@ void Controller::copy_file() {
   }
 }
 
+//TODO la copia con sync on dal 2. pannello non ha funzionato
 void Controller::sync_file() {
   Panel &p1 = get_active_panel();
   Panel &p2 = get_inactive_panel();

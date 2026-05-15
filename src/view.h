@@ -15,6 +15,7 @@ public:
   void draw_panels(bool sync_mode);
   CommandBar &get_command_bar();
   void set_offset(const Panel &p, int o);
+  int get_height();
 
 private:
   std::unique_ptr<Panel_view> panels[2];

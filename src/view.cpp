@@ -34,4 +34,8 @@ void View::set_offset(const Panel &p, int o) {
   }
 }
 
+int View::get_height() {
+return height - 3;  
+}
+
 CommandBar &View::get_command_bar() { return command_bar; }

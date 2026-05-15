@@ -82,8 +82,7 @@ private:
   void go_right();
   void go_first();
   void go_last();
-  void move_up();
-  void move_down();
+  void move(int direction, int lines);
   void toggle_tag_file();
 
   // --- Comandi ---

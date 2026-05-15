@@ -73,30 +73,35 @@ void Panel::compare_files(FileEntry &a, FileEntry &b) {
   try {
     auto size_a = std::filesystem::file_size(a.get_path());
     auto size_b = std::filesystem::file_size(b.get_path());
-    bool different = false;
     if (size_a != size_b) {
-      different = true;
-    } else {
-      // hash parziale 8KB
-      auto hash_a = partial_hash(a.get_path(), 8192);
-      auto hash_b = partial_hash(b.get_path(), 8192);
-      if (hash_a != hash_b)
-        different = true;
-    }
-    if (!different) {
-      a.set_sync_status(SyncStatus::SAME);
-      b.set_sync_status(SyncStatus::SAME);
+      // dimensioni diverse → sicuramente diversi, confronta data
+      auto time_a = std::filesystem::last_write_time(a.get_path());
+      auto time_b = std::filesystem::last_write_time(b.get_path());
+      if (time_a > time_b) {
+        a.set_sync_status(SyncStatus::NEWER);
+        b.set_sync_status(SyncStatus::OLDER);
+      } else {
+        a.set_sync_status(SyncStatus::OLDER);
+        b.set_sync_status(SyncStatus::NEWER);
+      }
       return;
     }
-    // diversi: confronta data
-    auto time_a = std::filesystem::last_write_time(a.get_path());
-    auto time_b = std::filesystem::last_write_time(b.get_path());
-    if (time_a > time_b) {
-      a.set_sync_status(SyncStatus::NEWER);
-      b.set_sync_status(SyncStatus::OLDER);
+    // stessa dimensione → hash per certezza
+    auto hash_a = partial_hash(a.get_path(), 8192);
+    auto hash_b = partial_hash(b.get_path(), 8192);
+    if (hash_a == hash_b) {
+      a.set_sync_status(SyncStatus::SAME);
+      b.set_sync_status(SyncStatus::SAME);
     } else {
-      a.set_sync_status(SyncStatus::OLDER);
-      b.set_sync_status(SyncStatus::NEWER);
+      auto time_a = std::filesystem::last_write_time(a.get_path());
+      auto time_b = std::filesystem::last_write_time(b.get_path());
+      if (time_a > time_b) {
+        a.set_sync_status(SyncStatus::NEWER);
+        b.set_sync_status(SyncStatus::OLDER);
+      } else {
+        a.set_sync_status(SyncStatus::OLDER);
+        b.set_sync_status(SyncStatus::NEWER);
+      }
     }
   } catch (const std::filesystem::filesystem_error &) {
     a.set_sync_status(SyncStatus::NONE);
@@ -207,14 +212,16 @@ std::filesystem::path Panel::get_current_file_fullpath() const {
   return fe.get_path();
 }
 
-void Panel::move_up() {
-  if (selected_index > 0)
-    selected_index--;
+void Panel::move_up(int lines) {
+  selected_index -= lines;
+  if (selected_index < 0)
+    selected_index = 0;
 }
 
-void Panel::move_down() {
-  if (selected_index < (int)get_file_list().size() - 1)
-    selected_index++;
+void Panel::move_down(int lines) {
+  selected_index += lines;
+  if (selected_index > (int)get_file_list().size() - 1)
+    selected_index = (int)get_file_list().size() -1;
 }
 
 const std::filesystem::path &Panel::get_current_path() const {

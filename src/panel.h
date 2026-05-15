@@ -27,8 +27,8 @@ public:
   Panel* get_aligned_panel();
   int get_selected_index() const;
   void set_selected_index(int i);
-  void move_up();
-  void move_down();
+  void move_up(int lines);
+  void move_down(int lines);
   const FileEntry& get_file(int) const;
   bool go_up();
   bool go_left();
