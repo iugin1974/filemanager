@@ -212,7 +212,7 @@ void Controller::reload_panels() {
 
 void Controller::enter_pressed() {
   Panel &active_panel = get_active_panel();
-  Panel &other_panel = get_inactive_panel();
+  Panel &inactive_panel = get_inactive_panel();
   // il panello attivo non ha files
   if (active_panel.get_file_list().size() == 0)
     return;
@@ -226,7 +226,7 @@ void Controller::enter_pressed() {
   if (entry.is_directory()) {
     active_panel.change_dir(entry.get_path());
     if (sync_mode) {
-      other_panel.change_dir(other_panel.get_current_path() / entry.get_name());
+      inactive_panel.change_dir(inactive_panel.get_current_path() / entry.get_name());
       align_panels();
     }
     view.draw_panels(sync_mode);
@@ -346,7 +346,6 @@ void Controller::sync_partner(bool sync) {
   if (sync) {
     panels[0].set_sync_partner(&panels[1]);
     panels[1].set_sync_partner(&panels[0]);
-    align_panels();
   } else {
     panels[0].set_sync_partner(nullptr);
     panels[1].set_sync_partner(nullptr);
@@ -382,7 +381,14 @@ void Controller::set_sync(bool sync) {
   sync_mode = true;
   sync_partner(true);
   align_panels();
+  sync_index();
   view.draw_panels(sync_mode);
+}
+
+void Controller::sync_index() {
+   Panel &active = get_active_panel();
+  Panel &inactive = get_inactive_panel(); 
+  inactive.set_selected_index(active.get_selected_index());
 }
 
 void Controller::align_panels() {
@@ -395,7 +401,7 @@ void Controller::align_panels() {
 // TODO controlla il remove con sync mode attivato
 void Controller::delete_file(bool silent) {
   Panel &active = get_active_panel();
-  Panel &other = get_inactive_panel();
+  Panel &inactive = get_inactive_panel();
   auto files = active.get_files_to_operate();
   if (files.empty())
     return;
@@ -404,9 +410,9 @@ void Controller::delete_file(bool silent) {
     bool ok = true;
     if (!silent) {
       if (sync_mode) {
-        FileEntry other_file(other.get_current_path() / f.get_name());
-        if (other_file.exists())
-          ok = FileGuard::confirm_delete(f, other_file);
+        FileEntry inactive_file(inactive.get_current_path() / f.get_name());
+        if (inactive_file.exists())
+          ok = FileGuard::confirm_delete(f, inactive_file);
         else
           ok = FileGuard::confirm_delete(f);
       } else {
@@ -416,9 +422,9 @@ void Controller::delete_file(bool silent) {
     if (ok) {
       d.execute(f);
       if (sync_mode) {
-        FileEntry other_file(other.get_current_path() / f.get_name());
-        if (other_file.exists())
-          d.execute(other_file);
+        FileEntry inactive_file(inactive.get_current_path() / f.get_name());
+        if (inactive_file.exists())
+          d.execute(inactive_file);
       }
     }
   }
@@ -444,37 +450,32 @@ void Controller::copy_file() {
   }
 }
 
-//TODO la copia con sync on dal 2. pannello non ha funzionato
 void Controller::sync_file() {
-  Panel &p1 = get_active_panel();
-  Panel &p2 = get_inactive_panel();
-  auto files = p1.get_files_to_operate();
-  if (files.empty())
-    return;
-  CopyOperation c;
-  for (auto &source : files) {
-    // cerca il corrispondente in p2 dalla lista allineata
-    int idx = p2.contains(source.get_name());
-    if (idx == -1) {
-      // non esiste nell'altro pannello: copia direttamente
-      FileEntry destination(p2.get_current_path() / source.get_name());
-      c.execute(source, destination);
-      continue;
-    }
-    const FileEntry &destination = p2.get_file(idx);
-    if (source.get_sync_status() == SyncStatus::NEWER)
-      c.execute(source, destination);
-    else if (source.get_sync_status() == SyncStatus::OLDER)
-      c.execute(destination, source);
-    // SAME: niente da fare
-  }
-  align_panels();
+    Panel &active = get_active_panel();
+  Panel &inactive = get_inactive_panel();
+FileEntry f1 = active.get_current_file();
+FileEntry f2 = inactive.get_current_file();
+CopyOperation c;
+if (f2.is_placeholder()) {
+ c.execute(f1, FileEntry(inactive.get_current_path() / f1.get_name())); 
+}
+else if (f1.is_placeholder()) {
+ c.execute(f2, FileEntry(active.get_current_path() / f2.get_name())); 
+}
+else if (f1.get_sync_status() == SyncStatus::NEWER && f2.get_sync_status() == SyncStatus::OLDER) {
+  c.execute(f1, f2);
+}
+else if (f2.get_sync_status() == SyncStatus::NEWER && f1.get_sync_status() == SyncStatus::OLDER) {
+  c.execute(f2, f1);
+}
+else return;
   reload_panels();
+  align_panels();
 }
 
 void Controller::touch(const std::string &name) {
   Panel &active = get_active_panel();
-  Panel &other = get_inactive_panel();
+  Panel &inactive = get_inactive_panel();
   std::filesystem::path active_path = active.get_current_path() / name;
   bool ok = true;
   if (std::filesystem::exists(active_path))
@@ -485,16 +486,16 @@ void Controller::touch(const std::string &name) {
     FileEntry fe(active_path);  // <-- poi costruisco FileEntry
                                 // Questo perché altrimenti la data non verrebbe settata
     if (sync_mode) {
-      std::filesystem::path other_path = other.get_current_path() / name;
-      t.execute(FileEntry(other_path));
-      FileEntry other_fe(other_path);
+      std::filesystem::path inactive_path = inactive.get_current_path() / name;
+      t.execute(FileEntry(inactive_path));
+      FileEntry inactive_fe(inactive_path);
     }
   }
 }
 
 void Controller::mkdir(const std::string &name) {
   Panel &active = get_active_panel();
-  Panel &other = get_inactive_panel();
+  Panel &inactive = get_inactive_panel();
   std::filesystem::path new_dir = active.get_current_path() / name;
   if (std::filesystem::exists(new_dir)) {
     view.get_command_bar().print_message("Directory already exists: " + name,
@@ -505,12 +506,12 @@ void Controller::mkdir(const std::string &name) {
   m.execute(FileEntry(new_dir));
   FileEntry fe(new_dir);
   if (sync_mode)
-    m.execute(FileEntry(other.get_current_path() / name));
+    m.execute(FileEntry(inactive.get_current_path() / name));
 }
 
 void Controller::move_file(const std::string &name) {
   Panel &active = get_active_panel();
-  Panel &other = get_inactive_panel();
+  Panel &inactive = get_inactive_panel();
   if (active.get_file_list().empty())
     return;
   const FileEntry &fe = active.get_current_file();
@@ -525,11 +526,11 @@ void Controller::move_file(const std::string &name) {
   MoveOperation m;
   m.execute(source, destination);
   if (sync_mode) {
-    FileEntry other_source =
-      FileEntry(other.get_current_path() / source.get_name());
-    FileEntry other_destination = FileEntry(other.get_current_path() / name);
-    if (other_source.exists())
-      m.execute(other_source, other_destination);
+    FileEntry inactive_source =
+      FileEntry(inactive.get_current_path() / source.get_name());
+    FileEntry inactive_destination = FileEntry(inactive.get_current_path() / name);
+    if (inactive_source.exists())
+      m.execute(inactive_source, inactive_destination);
   }
 }
 
@@ -561,10 +562,10 @@ void Controller::change_dir(const std::string &path) {
     return;
   }
   Panel &active = get_active_panel();
-  Panel &other = get_inactive_panel();
+  Panel &inactive = get_inactive_panel();
   active.change_dir(full_path);
   if (sync_mode) {
-    other.change_dir(other.get_current_path() /
+    inactive.change_dir(inactive.get_current_path() /
         std::filesystem::path(path).filename());
     align_panels();
   }

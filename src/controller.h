@@ -61,6 +61,7 @@ private:
 
   // --- Helpers ---
   void align_panels();
+  void sync_index();
   int get_active_panel_index() const;
   int get_active_panel_index();
   int get_inactive_panel_index() const;
