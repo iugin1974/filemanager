@@ -24,7 +24,7 @@ void Controller::test() {
   std::filesystem::create_directories("/tmp/B");
 
   // File in A
-  for (const auto &name : {"a.txt", "b.txt", "c.txt", "d.txt"}) {
+  for (const auto &name : {"0.txt", "a.txt", "b.txt", "c.txt", "d.txt"}) {
     std::ofstream("/tmp/A/" + std::string(name));
   }
 
@@ -36,15 +36,11 @@ void Controller::test() {
   // Cambia directory nei due pannelli
   panels[0].change_dir("/tmp/A");
   panels[1].change_dir("/tmp/B");
-  set_sync(true);
-  align_panels();
-  reload_panels();
+  //set_sync(true);
 
-  move(1,1);
-  move(1,1);
-  move(1,1);
-  move(1,1);
   view.draw_panels(sync_mode);
+  //align_panels();
+  reload_panels();
 }
 
 // ---------------------------------------------------------------------------
@@ -55,6 +51,7 @@ Controller::Controller(View &view)
   panels{{1, 2}}
 {
 init();
+  test();
 }
 
 void Controller::init() {           
@@ -376,31 +373,16 @@ void Controller::evaluate_command(const std::string &cmd) {
   view.draw_panels(sync_mode);
 }
 
-// TODO controllare le condizioni di avvio di sync-mode
 void Controller::set_sync(bool sync) {
   if (!sync) {
     sync_mode = false;
     sync_partner(false);
     return;
   }
-  // sync on può solo essere attivato se i due cursori sono su un file con lo
-  // stesso nome. se non esiste, non si attiva
-  std::string n1 = panels[0].get_current_file_name();
-  if (n1.empty()) {
-    sync_mode = false;
-    sync_partner(false);
-    return;
-  }
-  int index = panels[1].contains(n1);
-  if (index == -1) {
-    sync_mode = false;
-    sync_partner(false);
-    return;
-  }
-
-  panels[1].set_selected_index(index);
   sync_mode = true;
   sync_partner(true);
+  align_panels();
+  view.draw_panels(sync_mode);
 }
 
 void Controller::align_panels() {
@@ -487,6 +469,7 @@ void Controller::sync_file() {
     // SAME: niente da fare
   }
   align_panels();
+  reload_panels();
 }
 
 void Controller::touch(const std::string &name) {
