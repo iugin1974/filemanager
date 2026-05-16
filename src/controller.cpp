@@ -22,22 +22,22 @@ void Controller::test() {
   // Crea le cartelle
   std::filesystem::create_directories("/tmp/A");
   std::filesystem::create_directories("/tmp/B");
-
+  
   // File in A
   for (const auto &name : {"0.txt", "a.txt", "b.txt", "c.txt", "d.txt"}) {
     std::ofstream("/tmp/A/" + std::string(name));
   }
-
+  
   // File in B
   for (const auto &name : {"a.txt", "b.txt", "d.txt"}) {
     std::ofstream("/tmp/B/" + std::string(name));
   }
-
+  
   // Cambia directory nei due pannelli
   panels[0].change_dir("/tmp/A");
   panels[1].change_dir("/tmp/B");
   //set_sync(true);
-
+  
   view.draw_panels(sync_mode);
   //align_panels();
   reload_panels();
@@ -47,24 +47,24 @@ void Controller::test() {
 // Costruttore
 // ---------------------------------------------------------------------------
 Controller::Controller(View &view)
-  : view(view),
-  panels{{1, 2}}
+: view(view),
+panels{{1, 2}}
 {
-init();
+  init();
   test();
 }
 
 void Controller::init() {           
   reload_panels();
-    panels[0].set_active(true);
-    view.init_panels(&panels[0], &panels[1]);
-    view.draw_panels(sync_mode);
+  panels[0].set_active(true);
+  view.init_panels(&panels[0], &panels[1]);
+  view.draw_panels(sync_mode);
 }
 
 void Controller::on_resize() {
-    view.init();                              // ricalcola dimensioni
-    view.init_panels(&panels[0], &panels[1]); // ricrea Panel_view
-    view.draw_panels(sync_mode);              // ridisegna
+  view.init();                              // ricalcola dimensioni
+  view.init_panels(&panels[0], &panels[1]); // ricrea Panel_view
+  view.draw_panels(sync_mode);              // ridisegna
 }
 // ---------------------------------------------------------------------------
 // Helpers privati
@@ -129,35 +129,35 @@ bool Controller::handle_key(int ch) {
     case KEY_NPAGE:
       move(1, view.get_height());
       break;
-
+      
     case KEY_PPAGE:
       move(-1, view.get_height());
       break;
-
+      
     case KEY_UP:
       move(-1, 1);
       break;
-
+      
     case KEY_DOWN:
       move(1, 1);
       break;
-
+      
     case KEY_LEFT:
       go_left();
       break;
-
+      
     case KEY_RIGHT:
       go_right();
       break;
-
+      
     case KEY_HOME:
       go_first();
       break;
-
+      
     case KEY_END:
       go_last();
       break;
-
+      
     case KEY_ENTER:
     case 10:
     case 13:
@@ -166,36 +166,36 @@ bool Controller::handle_key(int ch) {
     case '-':
       go_up();
       break;
-
+      
     case ctrl('h'): {
-                      for (int i = 0; i < 2; i++) {
-                        panels.at(i).show_hidden_files(!panels.at(i).is_showing_hidden());
-                        panels.at(i).reload();
-                      }
-                      break;
-                    }
+      for (int i = 0; i < 2; i++) {
+        panels.at(i).show_hidden_files(!panels.at(i).is_showing_hidden());
+        panels.at(i).reload();
+      }
+      break;
+    }
     case ctrl('t'):
-                    toggle_tag_file();
-                    break;
+      toggle_tag_file();
+      break;
     case 9: // TAB
-                    change_active_panel();
-                    break;
-
+      change_active_panel();
+      break;
+      
     case ':': {
-                std::string cmd = get_command();
-                if (!cmd.empty())
-                  evaluate_command(cmd);
-                break;
-              }
+      std::string cmd = get_command();
+      if (!cmd.empty())
+        evaluate_command(cmd);
+      break;
+    }
     case '$': {
-                reload_panels();
-                break;
-              }
+      reload_panels();
+      break;
+    }
     default:
-              jump_to_file(ch);
-              break;
+      jump_to_file(ch);
+      break;
   }
-
+  
   view.draw_panels(sync_mode);
   return exit;
 }
@@ -244,12 +244,12 @@ void Controller::enter_pressed() {
 
 void Controller::go_left() {
   bool moved = false;
-
+  
   for_active_panels([&moved](Panel &p, int) {
-      bool ok = p.go_left();
-      moved = moved || ok;
-      });
-
+    bool ok = p.go_left();
+    moved = moved || ok;
+  });
+  
   if (moved) {
     align_panels();
     view.draw_panels(sync_mode);
@@ -258,12 +258,12 @@ void Controller::go_left() {
 
 void Controller::go_right() {
   bool moved = false;
-
+  
   for_active_panels([&moved](Panel &p, int) {
-      bool ok = p.go_right();
-      moved = moved || ok;
-      });
-
+    bool ok = p.go_right();
+    moved = moved || ok;
+  });
+  
   if (moved) {
     align_panels();
     view.draw_panels(sync_mode);
@@ -273,58 +273,58 @@ void Controller::go_right() {
 void Controller::go_up() {
   bool changed = false;
   for_active_panels([&changed](Panel &p, int) {
-      bool ok = p.go_up();
-      changed = changed || ok;
-      });
-      if (changed) {
-      align_panels();
-      view.draw_panels(sync_mode);
-      }
+    bool ok = p.go_up();
+    changed = changed || ok;
+  });
+  if (changed) {
+    align_panels();
+    view.draw_panels(sync_mode);
+  }
 }
 
 void Controller::go_first() {
   for_active_panels([](Panel &p, int) {
-      p.select_first();
-      });
+    p.select_first();
+  });
 }
 
 void Controller::go_last() {
   for_active_panels([](Panel &p, int) {
-      p.select_last();
-      });
+    p.select_last();
+  });
 }
 
 void Controller::move(int direction, int lines) {
   if (direction == -1)
-  for_active_panels([lines](Panel &p, int) { p.move_up(lines); });
+    for_active_panels([lines](Panel &p, int) { p.move_up(lines); });
   else if (direction == 1)
-  for_active_panels([lines](Panel &p, int) { p.move_down(lines); });
+    for_active_panels([lines](Panel &p, int) { p.move_down(lines); });
 }
 
 void Controller::jump_to_file(char ch) {
   // auto oggetto = [capture list] (parametri) -> tipo_ritorno { corpo };
   auto jump = [&](Panel &p) -> void {
     for (int i = p.get_selected_index() + 1;
-        i < static_cast<int>(p.get_raw_file_list().size()); i++) {
+         i < static_cast<int>(p.get_raw_file_list().size()); i++) {
       std::string name = p.get_file_at(i).get_name();
-      if (name[0] == ch) {
-        p.set_selected_index(i);
-        view.set_offset(p, i);
-        view.draw_panels(sync_mode);
-        return;
-      }
+    if (name[0] == ch) {
+      p.set_selected_index(i);
+      view.set_offset(p, i);
+      view.draw_panels(sync_mode);
+      return;
     }
-
-    for (int i = 0; i < p.get_selected_index(); i++) {
-      std::string name = p.get_file_at(i).get_name();
-      if (name[0] == ch) {
-        p.set_selected_index(i);
-        view.draw_panels(sync_mode);
-        return;
-      }
-    }
+         }
+         
+         for (int i = 0; i < p.get_selected_index(); i++) {
+           std::string name = p.get_file_at(i).get_name();
+           if (name[0] == ch) {
+             p.set_selected_index(i);
+             view.draw_panels(sync_mode);
+             return;
+           }
+         }
   }; // end lambda
-
+  
   jump(get_active_panel());
   if (sync_mode)
     jump(get_inactive_panel());
@@ -386,7 +386,7 @@ void Controller::set_sync(bool sync) {
 }
 
 void Controller::sync_index() {
-   Panel &active = get_active_panel();
+  Panel &active = get_active_panel();
   Panel &inactive = get_inactive_panel(); 
   inactive.set_selected_index(active.get_selected_index());
 }
@@ -398,7 +398,6 @@ void Controller::align_panels() {
   panels[1].align_with(panels[0].get_raw_file_list());
 }
 
-// TODO controlla il remove con sync mode attivato
 void Controller::delete_file(bool silent) {
   Panel &active = get_active_panel();
   Panel &inactive = get_inactive_panel();
@@ -407,28 +406,23 @@ void Controller::delete_file(bool silent) {
     return;
   DeleteOperation d;
   for (const auto &f : files) {
-    bool ok = true;
+    FileEntry inactive_file(inactive.get_current_path() / f.get_name());
+    bool has_pair = sync_mode && inactive_file.exists();
+
+    // conferma
     if (!silent) {
-      if (sync_mode) {
-        FileEntry inactive_file(inactive.get_current_path() / f.get_name());
-        if (inactive_file.exists())
-          ok = FileGuard::confirm_delete(f, inactive_file);
-        else
-          ok = FileGuard::confirm_delete(f);
-      } else {
-        ok = FileGuard::confirm_delete(f);
-      }
+      bool ok = has_pair ? FileGuard::confirm_delete(f, inactive_file)
+                         : FileGuard::confirm_delete(f);
+      if (!ok) continue;
     }
-    if (ok) {
-      d.execute(f);
-      if (sync_mode) {
-        FileEntry inactive_file(inactive.get_current_path() / f.get_name());
-        if (inactive_file.exists())
-          d.execute(inactive_file);
-      }
-    }
+
+    // cancella
+    d.execute(f);
+    if (has_pair)
+      d.execute(inactive_file);
   }
 }
+
 void Controller::copy_file() {
   if (sync_mode) {
     sync_file();
@@ -451,24 +445,24 @@ void Controller::copy_file() {
 }
 
 void Controller::sync_file() {
-    Panel &active = get_active_panel();
+  Panel &active = get_active_panel();
   Panel &inactive = get_inactive_panel();
-FileEntry f1 = active.get_current_file();
-FileEntry f2 = inactive.get_current_file();
-CopyOperation c;
-if (f2.is_placeholder()) {
- c.execute(f1, FileEntry(inactive.get_current_path() / f1.get_name())); 
-}
-else if (f1.is_placeholder()) {
- c.execute(f2, FileEntry(active.get_current_path() / f2.get_name())); 
-}
-else if (f1.get_sync_status() == SyncStatus::NEWER && f2.get_sync_status() == SyncStatus::OLDER) {
-  c.execute(f1, f2);
-}
-else if (f2.get_sync_status() == SyncStatus::NEWER && f1.get_sync_status() == SyncStatus::OLDER) {
-  c.execute(f2, f1);
-}
-else return;
+  FileEntry f1 = active.get_current_file();
+  FileEntry f2 = inactive.get_current_file();
+  CopyOperation c;
+  if (f2.is_placeholder()) {
+    c.execute(f1, FileEntry(inactive.get_current_path() / f1.get_name())); 
+  }
+  else if (f1.is_placeholder()) {
+    c.execute(f2, FileEntry(active.get_current_path() / f2.get_name())); 
+  }
+  else if (f1.get_sync_status() == SyncStatus::NEWER && f2.get_sync_status() == SyncStatus::OLDER) {
+    c.execute(f1, f2);
+  }
+  else if (f2.get_sync_status() == SyncStatus::NEWER && f1.get_sync_status() == SyncStatus::OLDER) {
+    c.execute(f2, f1);
+  }
+  else return;
   reload_panels();
   align_panels();
 }
@@ -484,7 +478,7 @@ void Controller::touch(const std::string &name) {
     TouchOperation t;
     t.execute(FileEntry(active_path));  // <-- prima creo il file
     FileEntry fe(active_path);  // <-- poi costruisco FileEntry
-                                // Questo perché altrimenti la data non verrebbe settata
+    // Questo perché altrimenti la data non verrebbe settata
     if (sync_mode) {
       std::filesystem::path inactive_path = inactive.get_current_path() / name;
       t.execute(FileEntry(inactive_path));
@@ -499,7 +493,7 @@ void Controller::mkdir(const std::string &name) {
   std::filesystem::path new_dir = active.get_current_path() / name;
   if (std::filesystem::exists(new_dir)) {
     view.get_command_bar().print_message("Directory already exists: " + name,
-        CommandBar::ERROR);
+                                         CommandBar::ERROR);
     return;
   }
   MkdirOperation m;
@@ -527,7 +521,7 @@ void Controller::move_file(const std::string &name) {
   m.execute(source, destination);
   if (sync_mode) {
     FileEntry inactive_source =
-      FileEntry(inactive.get_current_path() / source.get_name());
+    FileEntry(inactive.get_current_path() / source.get_name());
     FileEntry inactive_destination = FileEntry(inactive.get_current_path() / name);
     if (inactive_source.exists())
       m.execute(inactive_source, inactive_destination);
@@ -558,7 +552,7 @@ void Controller::change_dir(const std::string &path) {
   }
   if (!std::filesystem::exists(full_path)) {
     view.get_command_bar().print_message("Directory not exists",
-        CommandBar::ERROR);
+                                         CommandBar::ERROR);
     return;
   }
   Panel &active = get_active_panel();
@@ -566,7 +560,7 @@ void Controller::change_dir(const std::string &path) {
   active.change_dir(full_path);
   if (sync_mode) {
     inactive.change_dir(inactive.get_current_path() /
-        std::filesystem::path(path).filename());
+    std::filesystem::path(path).filename());
     align_panels();
   }
 }
