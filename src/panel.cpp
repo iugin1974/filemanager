@@ -65,11 +65,9 @@ void Panel::align_with(std::vector<FileEntry> &other_file_list) {
 }
 
 void Panel::compare_files(FileEntry &a, FileEntry &b) {
-  if (a.is_directory() || b.is_directory()) {
-    a.set_sync_status(SyncStatus::NONE);
-    b.set_sync_status(SyncStatus::NONE);
+if (a.get_sync_status() == SyncStatus::DIR || b.get_sync_status() == SyncStatus::DIR)
     return;
-  }
+  
   try {
     auto size_a = std::filesystem::file_size(a.get_path());
     auto size_b = std::filesystem::file_size(b.get_path());

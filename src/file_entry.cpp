@@ -4,10 +4,13 @@
 
 FileEntry::FileEntry(const std::filesystem::directory_entry &entry) {
   this->entry = entry;
-  if (entry.exists())
+  if (entry.exists()) {
     last_write_time = entry.last_write_time();
-  else
+    if (entry.is_directory())
+      sync_status = SyncStatus::DIR;
+  } else {
     last_write_time = std::filesystem::file_time_type{};
+  }
 }
 
 FileEntry::FileEntry(const std::filesystem::path &path)
@@ -25,7 +28,7 @@ void FileEntry::print(WINDOW *win, int row, bool selected, int width,
     mvwhline(win, row, 0, ' ', width);
   }
 
-  if (entry.is_directory()) {
+  if (sync_status == SyncStatus::DIR) {
     wattron(win, COLOR_PAIR(1));
     wattron(win, A_BOLD);
   }

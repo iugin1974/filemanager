@@ -372,6 +372,28 @@ void Controller::evaluate_command(const std::string &cmd) {
   view.draw_panels(sync_mode);
 }
 
+void Controller::jump_to_next_different() {
+  if (!sync_mode) return;
+  Panel &active = get_active_panel();
+  Panel &inactive = get_inactive_panel();
+  if (active.get_file_list().size() == 0) return;
+  if (inactive.get_file_list().size() == 0) return;
+
+  int start = active.get_selected_index();
+  int size = active.get_file_list().size();
+
+  // parte dal file successivo, wrappa fino a start
+  for (int n = 1; n < size; n++) {
+    int i = (start + n) % size;
+    auto f = active.get_file_at(i);
+    if (f.get_sync_status() != SyncStatus::SAME) {
+      active.set_selected_index(i);
+      inactive.set_selected_index(i);
+      return;
+    }
+  }
+}
+
 void Controller::set_sync(bool sync) {
   if (!sync) {
     sync_mode = false;

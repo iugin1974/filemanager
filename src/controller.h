@@ -48,6 +48,10 @@ void on_resize();
   // se il file non esiste nell'altro pannello, viene copiato
   // altrimenti il file più recente sovrascrive il più vecchio
   void sync_file();
+  
+  // se sync mode è attivo, salta al prossimo file che differisce
+  // tra i due pannelli.
+  void jump_to_next_different();
 
 private:
   void test();

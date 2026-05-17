@@ -6,7 +6,7 @@
 
 // SAME: stesso nome in entrambi i pannelli, contenuto identico (stessa dimensione + hash uguale)
 // NONE: non confrontabile (placeholder, directory, ecc.)
-enum class SyncStatus { NONE, SAME, NEWER, OLDER };
+enum class SyncStatus { NONE, SAME, NEWER, OLDER, DIR };
 
 class FileEntry {
   public:
