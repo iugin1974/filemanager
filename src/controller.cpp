@@ -51,7 +51,7 @@ Controller::Controller(View &view)
 panels{{1, 2}}
 {
   init();
-  test();
+ // test();
 }
 
 void Controller::init() {           
