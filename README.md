@@ -79,7 +79,7 @@ Use **Tab** to switch between panels.
 | `Enter` | Open directory or file |
 | `←` | Go back in history |
 | `→` | Go forward in history |
-| `Backspace` | Go to parent directory |
+| `-` | Go to parent directory |
 
 ### File Operations
 
@@ -126,7 +126,7 @@ In sync mode, files are aligned by name across both panels:
 |-----|--------|
 | `Ctrl+H` | Toggle hidden files |
 | `:` | Open command bar |
-| `q` | Quit |
+| `:q` | Quit |
 
 ## Project Structure
 
