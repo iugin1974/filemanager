@@ -6,7 +6,7 @@
 
 // SAME: stesso nome in entrambi i pannelli, contenuto identico (stessa dimensione + hash uguale)
 // NONE: non confrontabile (placeholder, directory, ecc.)
-enum class SyncStatus { NONE, SAME, NEWER, OLDER, DIR };
+enum class SyncStatus { NONE, SAME, NEWER, OLDER, ONCE, DIR };
 
 class FileEntry {
   public:
@@ -28,7 +28,7 @@ class FileEntry {
     void print(WINDOW* win, int row, bool selected, int width, bool active_panel) const;
     bool is_directory() const;
     std::filesystem::path get_path() const;
-    const std::string get_name() const; 
+    const std::string get_name() const;
     void tag(bool t);
     void toggle_tag();
     bool is_tagged() const;

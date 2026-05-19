@@ -48,17 +48,22 @@ void Panel::align_with(std::vector<FileEntry> &other_file_list) {
       ++i;
       ++j;
     } else if (cmp < 0) {
+      raw_file_list[i].set_sync_status(SyncStatus::ONCE);
       aligned_file_list.push_back(raw_file_list[i]);
       ++i;
     } else {
+      other_file_list[j].set_sync_status(SyncStatus::ONCE);
       aligned_file_list.push_back(FileEntry()); // buco
       ++j;
     }
   }
   // aggiunge i files restanti
-  while (i < raw_file_list.size())
+  while (i < raw_file_list.size()) {
+    raw_file_list[i].set_sync_status(SyncStatus::ONCE);
     aligned_file_list.push_back(raw_file_list[i++]);
+  }
   while (j < other_file_list.size()) {
+    other_file_list[j].set_sync_status(SyncStatus::ONCE);
     aligned_file_list.push_back(FileEntry());
     j++;
   }
@@ -67,7 +72,7 @@ void Panel::align_with(std::vector<FileEntry> &other_file_list) {
 void Panel::compare_files(FileEntry &a, FileEntry &b) {
 if (a.get_sync_status() == SyncStatus::DIR || b.get_sync_status() == SyncStatus::DIR)
     return;
-  
+
   try {
     auto size_a = std::filesystem::file_size(a.get_path());
     auto size_b = std::filesystem::file_size(b.get_path());

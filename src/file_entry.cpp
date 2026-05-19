@@ -33,7 +33,7 @@ void FileEntry::print(WINDOW *win, int row, bool selected, int width,
     wattron(win, A_BOLD);
   }
 
-  if (sync_status == SyncStatus::NEWER) {
+  if (sync_status == SyncStatus::NEWER || sync_status == SyncStatus::ONCE) {
     wattron(win, COLOR_PAIR(2));
   } else if (sync_status == SyncStatus::OLDER) {
     wattron(win, COLOR_PAIR(4));
