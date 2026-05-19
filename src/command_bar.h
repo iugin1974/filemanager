@@ -2,6 +2,8 @@
 #include <ncurses.h>
 #include <string>
 
+enum class CommandType { COMMAND, SEARCH };
+
 class CommandBar {
   public:
     static const int INFO = 0;
@@ -11,7 +13,7 @@ class CommandBar {
     ~CommandBar();
     void init_bar(int y, int w);
     void print_message(std::string, const int message_type);
-    std::string get_command();
+    std::string get_command(const CommandType c);
     void clear();
 
   private:

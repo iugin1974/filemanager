@@ -15,14 +15,17 @@ void CommandBar::init_bar(int y, int w) {
   win = newwin(1, width, y_pos, 0);
 }
 
-std::string CommandBar::get_command() {
+std::string CommandBar::get_command(const CommandType c) {
   nocbreak();
   echo();
 
   std::string input;
 
   werase(win);
+  if (c == CommandType::COMMAND) 
   mvwprintw(win, 0, 0, ":");
+  else if (c == CommandType::SEARCH) 
+    mvwprintw(win, 0, 0, "/");
   wrefresh(win);
 
   int ch;

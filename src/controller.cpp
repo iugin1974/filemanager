@@ -181,8 +181,15 @@ bool Controller::handle_key(int ch) {
       change_active_panel();
       break;
       
+    case '/': {
+		std::string str = get_command(CommandType::SEARCH);
+		if (!str.empty())
+		  search_file(str);
+		break;
+	      }
+
     case ':': {
-      std::string cmd = get_command();
+      std::string cmd = get_command(CommandType::COMMAND);
       if (!cmd.empty())
         evaluate_command(cmd);
       break;
@@ -355,8 +362,26 @@ void Controller::sync_partner(bool sync) {
 // Comandi
 // ---------------------------------------------------------------------------
 
-std::string Controller::get_command() {
-  return view.get_command_bar().get_command();
+std::string Controller::get_command(CommandType c) {
+  return view.get_command_bar().get_command(c);
+}
+
+void Controller::search_file(const std::string &name) {
+  Panel &active = get_active_panel();
+  Panel &inactive = get_inactive_panel();
+  const auto &files = active.get_file_list();
+
+  for (int i = 0; i < (int)files.size(); i++) {
+    if (files[i].get_name().find(name) != std::string::npos) {
+      active.set_selected_index(i);
+      if (sync_mode)
+        inactive.set_selected_index(i);
+      view.draw_panels(sync_mode);
+      return;
+    }
+  }
+  // nessun risultato
+  view.get_command_bar().print_message("Not found: " + name, CommandBar::ERROR);
 }
 
 void Controller::evaluate_command(const std::string &cmd) {

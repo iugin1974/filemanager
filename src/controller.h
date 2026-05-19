@@ -91,7 +91,8 @@ private:
   void toggle_tag_file();
 
   // --- Comandi ---
-  std::string get_command();
+  std::string get_command(CommandType c);
+  void search_file(const std::string &name);
   void evaluate_command(const std::string &cmd);
   bool show_file_exists_popup(const std::filesystem::path &source,
                               const std::filesystem::path &dest);
