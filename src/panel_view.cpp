@@ -26,11 +26,12 @@ void Panel_view::draw(bool sync_mode) {
   const auto &files = panel->get_file_list();
   int visible = std::min((int)files.size() - offset, height);
 
-  for (int i = 0; i < visible; i++) {
+for (int i = 0; i < visible; i++) {
     bool is_selected = (i + offset == selected);
-    files[i + offset].print(win, i, is_selected, width,
-                            sync_mode || panel->is_active());
-  }
+    std::lock_guard<std::mutex> lock(panel->get_mutex());
+    panel->get_file_list().at(i + offset).print(win, i, is_selected, width,
+                                                 sync_mode || panel->is_active());
+}
 
   if (panel->get_file_list().size() > 0)
     status_bar.print_message(panel->get_current_path(),
@@ -41,7 +42,7 @@ void Panel_view::draw(bool sync_mode) {
 
   // disegna i bordi
   draw_border(width, height);
-  wrefresh(win);
+  wnoutrefresh(win);
 }
 
 void Panel_view::set_offset(int o) {

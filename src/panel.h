@@ -4,6 +4,7 @@
 #include <vector>
 #include "file_entry.h"
 #include <stack>
+#include <mutex>
 
 class Panel {
 public:
@@ -19,6 +20,7 @@ public:
   // Restituisce la lista da visualizzare: la raw_list se sync_mode non
   // è attivo, altrimenti la aligned_list.
   const std::vector<FileEntry>& get_file_list() const;
+  std::vector<FileEntry>& get_file_list();
   const std::filesystem::path& get_current_path() const;
   std::string get_current_file_name() const;
   const std::vector<FileEntry>& get_raw_file_list() const;
@@ -48,9 +50,11 @@ public:
   void tag_current_file(bool t);
   void toggle_tag_current_file();
   std::vector<FileEntry> get_files_to_operate() const;
+  std::mutex& get_mutex();
 
 private:
   Panel* sync_partner = nullptr;
+  std::mutex mutex;
   History history;
   std::filesystem::path current_path;
   std::vector<FileEntry> raw_file_list;
@@ -59,8 +63,6 @@ private:
   int selected_index = 0;
   bool active = false;
   bool has_sync_partner() const;
-  void compare_files(FileEntry&, FileEntry&);
-  size_t partial_hash(const std::filesystem::path &path, size_t bytes);
   bool show_hidden = false;
   int id;
 };

@@ -6,7 +6,7 @@
 
 // SAME: stesso nome in entrambi i pannelli, contenuto identico (stessa dimensione + hash uguale)
 // NONE: non confrontabile (placeholder, directory, ecc.)
-enum class SyncStatus { NONE, SAME, NEWER, OLDER, ONCE, DIR };
+enum class SyncStatus { NONE, UNKNOW, SAME, NEWER, OLDER, ONCE, DIR };
 
 class FileEntry {
   public:
@@ -23,7 +23,7 @@ class FileEntry {
 //   1. Crea il file/directory (TouchOperation, MkdirOperation, ecc.)
 //   2. Costruisci FileEntry sul path appena creato
     explicit FileEntry(const std::filesystem::path& path);
-    FileEntry() : placeholder(true) {};
+    FileEntry() : placeholder(true) { sync_status = SyncStatus::NONE; };
     bool operator==(const FileEntry& other) const;
     void print(WINDOW* win, int row, bool selected, int width, bool active_panel) const;
     bool is_directory() const;
@@ -42,5 +42,5 @@ class FileEntry {
     bool tagged = false;
     bool placeholder = false;
     std::filesystem::file_time_type last_write_time;
-    SyncStatus sync_status = SyncStatus::NONE;
+    SyncStatus sync_status = SyncStatus::UNKNOW;
 };

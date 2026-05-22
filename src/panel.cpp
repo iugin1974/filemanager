@@ -36,14 +36,21 @@ const std::vector<FileEntry> &Panel::get_file_list() const {
   return has_sync_partner() ? aligned_file_list : raw_file_list;
 }
 
+std::vector<FileEntry> &Panel::get_file_list() {
+  return has_sync_partner() ? aligned_file_list : raw_file_list;
+}
+
+std::mutex& Panel::get_mutex() {
+  return mutex;
+}
+
 void Panel::align_with(std::vector<FileEntry> &other_file_list) {
   aligned_file_list.clear();
   size_t i = 0, j = 0;
   while (i < raw_file_list.size() && j < other_file_list.size()) {
     int cmp =
-        raw_file_list[i].get_name().compare(other_file_list[j].get_name());
+    raw_file_list[i].get_name().compare(other_file_list[j].get_name());
     if (cmp == 0) {
-      compare_files(raw_file_list[i], other_file_list[j]);
       aligned_file_list.push_back(raw_file_list[i]);
       ++i;
       ++j;
@@ -69,59 +76,6 @@ void Panel::align_with(std::vector<FileEntry> &other_file_list) {
   }
 }
 
-void Panel::compare_files(FileEntry &a, FileEntry &b) {
-if (a.get_sync_status() == SyncStatus::DIR || b.get_sync_status() == SyncStatus::DIR)
-    return;
-
-  try {
-    auto size_a = std::filesystem::file_size(a.get_path());
-    auto size_b = std::filesystem::file_size(b.get_path());
-    if (size_a != size_b) {
-      // dimensioni diverse → sicuramente diversi, confronta data
-      auto time_a = std::filesystem::last_write_time(a.get_path());
-      auto time_b = std::filesystem::last_write_time(b.get_path());
-      if (time_a > time_b) {
-        a.set_sync_status(SyncStatus::NEWER);
-        b.set_sync_status(SyncStatus::OLDER);
-      } else {
-        a.set_sync_status(SyncStatus::OLDER);
-        b.set_sync_status(SyncStatus::NEWER);
-      }
-      return;
-    }
-    // stessa dimensione → hash per certezza
-    auto hash_a = partial_hash(a.get_path(), 8192);
-    auto hash_b = partial_hash(b.get_path(), 8192);
-    if (hash_a == hash_b) {
-      a.set_sync_status(SyncStatus::SAME);
-      b.set_sync_status(SyncStatus::SAME);
-    } else {
-      auto time_a = std::filesystem::last_write_time(a.get_path());
-      auto time_b = std::filesystem::last_write_time(b.get_path());
-      if (time_a > time_b) {
-        a.set_sync_status(SyncStatus::NEWER);
-        b.set_sync_status(SyncStatus::OLDER);
-      } else {
-        a.set_sync_status(SyncStatus::OLDER);
-        b.set_sync_status(SyncStatus::NEWER);
-      }
-    }
-  } catch (const std::filesystem::filesystem_error &) {
-    a.set_sync_status(SyncStatus::NONE);
-    b.set_sync_status(SyncStatus::NONE);
-  }
-}
-
-size_t Panel::partial_hash(const std::filesystem::path &path, size_t bytes) {
-  std::ifstream f(path, std::ios::binary);
-  if (!f)
-    return 0;
-  std::vector<char> buf(bytes);
-  f.read(buf.data(), bytes);
-  size_t read = f.gcount();
-  return std::hash<std::string_view>{}(std::string_view(buf.data(), read));
-}
-
 void Panel::reload() {
   raw_file_list.clear();
   try {
@@ -134,15 +88,15 @@ void Panel::reload() {
   } catch (const std::filesystem::filesystem_error &e) {
     return;
   }
-
+  
   std::sort(raw_file_list.begin(), raw_file_list.end(),
             [](const auto &a, const auto &b) {
               auto category = [](const auto &entry) {
                 const std::string name = entry.get_path().filename().string();
                 bool hidden = !name.empty() && name[0] == '.';
-                bool dir = entry.is_directory();
-                if (hidden && dir)
-                  return 0;
+  bool dir = entry.is_directory();
+  if (hidden && dir)
+    return 0;
                 if (!hidden && dir)
                   return 1;
                 if (hidden && !dir)
@@ -155,7 +109,7 @@ void Panel::reload() {
                 return ca < cb;
               return a.get_path().filename() < b.get_path().filename();
             });
-
+  
   update_selected_index();
 }
 
@@ -171,7 +125,7 @@ const FileEntry &Panel::get_current_file() const {
 
 FileEntry &Panel::get_current_file() {
   return const_cast<FileEntry &>(
-      static_cast<const Panel *>(this)->get_current_file());
+    static_cast<const Panel *>(this)->get_current_file());
 }
 
 void Panel::show_hidden_files(bool h) { show_hidden = h; }
@@ -183,11 +137,11 @@ int Panel::get_selected_index() const { return selected_index; }
 void Panel::set_selected_index(int i) { selected_index = i; }
 
 void Panel::select_first() {
-if (get_file_list().size() > 0) set_selected_index(0);
+  if (get_file_list().size() > 0) set_selected_index(0);
 }
 
 void Panel::select_last() {
- if (get_file_list().size() >0) set_selected_index(get_file_list().size() - 1);
+  if (get_file_list().size() >0) set_selected_index(get_file_list().size() - 1);
 }
 
 void Panel::update_selected_index() {
@@ -242,14 +196,14 @@ const FileEntry &Panel::get_file(int i) const { return get_file_list().at(i); }
 Panel *Panel::get_aligned_panel() { return sync_partner; }
 
 bool Panel::go_up() {
- std::filesystem::path parent = current_path.parent_path();
- // Il check parent != current_path serve perché su /, parent_path() ritorna / stesso
- if (parent != current_path) {  // evita loop su /
-        change_dir(parent);
-        return true;
-        reload();
-    }
- return false;
+  std::filesystem::path parent = current_path.parent_path();
+  // Il check parent != current_path serve perché su /, parent_path() ritorna / stesso
+  if (parent != current_path) {  // evita loop su /
+    change_dir(parent);
+    return true;
+    reload();
+  }
+  return false;
 }
 
 bool Panel::go_left() {
@@ -297,7 +251,7 @@ void Panel::tag_current_file(bool t) {
   if (fe.is_placeholder())
     return;
   fe.tag(t);
-
+  
   if (t) {
     tagged_files.push_back(fe);
   } else {

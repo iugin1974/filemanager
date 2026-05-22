@@ -16,7 +16,7 @@ void StatusBar::print_message(const std::filesystem::path &current_path) {
   whline(win, ' ', getmaxx(win));
   mvwprintw(win, 0, 0, "%s", current_path.string().c_str());
   wattroff(win, A_REVERSE);
-  wrefresh(win);
+  wnoutrefresh(win);
 }
 
 void StatusBar::print_message(const std::filesystem::path &current_path,
@@ -67,7 +67,7 @@ void StatusBar::print_message(const std::filesystem::path &current_path,
   mvwprintw(win, 0, 0, "%s", left.c_str());
   mvwprintw(win, 0, right_col, "%s", right.c_str());
   wattroff(win, A_REVERSE);
-  wrefresh(win);
+  wnoutrefresh(win);
 }
 
 void StatusBar::clear() { werase(win); }

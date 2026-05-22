@@ -40,7 +40,7 @@ int Popup::show(std::vector<std::string> lines, std::vector<std::string> keys) {
         key_x += k.size() + 2;
     }
 
-    wrefresh(win);
+    wnoutrefresh(win);
 int ch = wgetch(win);
 delwin(win);
 

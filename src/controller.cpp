@@ -5,6 +5,7 @@
 #include "delete_operation.h"
 #include "file_entry.h"
 #include "file_guard.h"
+#include "file_comparator.h"
 #include "mkdir_operation.h"
 #include "move_operation.h"
 #include "operation.h"
@@ -24,14 +25,78 @@ void Controller::test() {
   std::filesystem::create_directories("/tmp/B");
   
   // File in A
-  for (const auto &name : {"0.txt", "a.txt", "b.txt", "c.txt", "d.txt"}) {
-    std::ofstream("/tmp/A/" + std::string(name));
-  }
-  
-  // File in B
-  for (const auto &name : {"a.txt", "b.txt", "d.txt"}) {
-    std::ofstream("/tmp/B/" + std::string(name));
-  }
+  // Nomi comuni (presenti in entrambe le cartelle) — 130 file
+    std::vector<std::string> common = {
+        "alpha.txt", "beta.txt", "gamma.txt", "delta.txt", "epsilon.txt",
+        "zeta.txt", "eta.txt", "theta.txt", "iota.txt", "kappa.txt",
+        "lambda.txt", "mu.txt", "nu.txt", "xi.txt", "omicron.txt",
+        "pi.txt", "rho.txt", "sigma.txt", "tau.txt", "upsilon.txt",
+        "phi.txt", "chi.txt", "psi.txt", "omega.txt",
+        "report_01.txt", "report_02.txt", "report_03.txt", "report_04.txt", "report_05.txt",
+        "report_06.txt", "report_07.txt", "report_08.txt", "report_09.txt", "report_10.txt",
+        "data_001.csv", "data_002.csv", "data_003.csv", "data_004.csv", "data_005.csv",
+        "data_006.csv", "data_007.csv", "data_008.csv", "data_009.csv", "data_010.csv",
+        "log_2024_01.log", "log_2024_02.log", "log_2024_03.log", "log_2024_04.log",
+        "log_2024_05.log", "log_2024_06.log", "log_2024_07.log", "log_2024_08.log",
+        "config_a.json", "config_b.json", "config_c.json", "config_d.json",
+        "config_e.json", "config_f.json", "config_g.json", "config_h.json",
+        "file_001.bin", "file_002.bin", "file_003.bin", "file_004.bin", "file_005.bin",
+        "file_006.bin", "file_007.bin", "file_008.bin", "file_009.bin", "file_010.bin",
+        "file_011.bin", "file_012.bin", "file_013.bin", "file_014.bin", "file_015.bin",
+        "file_016.bin", "file_017.bin", "file_018.bin", "file_019.bin", "file_020.bin",
+        "backup_mon.tar", "backup_tue.tar", "backup_wed.tar", "backup_thu.tar",
+        "backup_fri.tar", "backup_sat.tar", "backup_sun.tar",
+        "img_001.png", "img_002.png", "img_003.png", "img_004.png", "img_005.png",
+        "img_006.png", "img_007.png", "img_008.png", "img_009.png", "img_010.png",
+        "doc_a.xml", "doc_b.xml", "doc_c.xml", "doc_d.xml", "doc_e.xml",
+        "doc_f.xml", "doc_g.xml", "doc_h.xml", "doc_i.xml", "doc_j.xml",
+        "cache_1.tmp", "cache_2.tmp", "cache_3.tmp", "cache_4.tmp", "cache_5.tmp",
+        "cache_6.tmp", "cache_7.tmp", "cache_8.tmp", "cache_9.tmp", "cache_10.tmp",
+        "index_a.idx", "index_b.idx", "index_c.idx", "index_d.idx", "index_e.idx",
+        "note_jan.md", "note_feb.md", "note_mar.md", "note_apr.md",
+        "note_may.md", "note_jun.md", "note_jul.md", "note_aug.md",
+        "test_unit_01.cpp", "test_unit_02.cpp", "test_unit_03.cpp",
+        "test_unit_04.cpp", "test_unit_05.cpp",
+        "readme.md", "changelog.txt", "license.txt", "makefile", "cmakelists.txt",
+    };
+
+    // Solo in A — 25 file esclusivi
+    std::vector<std::string> only_a = {
+        "exclusive_a_01.txt", "exclusive_a_02.txt", "exclusive_a_03.txt",
+        "exclusive_a_04.txt", "exclusive_a_05.txt", "exclusive_a_06.txt",
+        "exclusive_a_07.txt", "exclusive_a_08.txt", "exclusive_a_09.txt",
+        "exclusive_a_10.txt", "exclusive_a_11.txt", "exclusive_a_12.txt",
+        "exclusive_a_13.txt", "exclusive_a_14.txt", "exclusive_a_15.txt",
+        "only_in_a_1.dat", "only_in_a_2.dat", "only_in_a_3.dat",
+        "only_in_a_4.dat", "only_in_a_5.dat",
+        "snapshot_v1.bak", "snapshot_v2.bak", "snapshot_v3.bak",
+        "draft_final.txt", "archive_old.zip",
+    };
+
+    // Solo in B — 25 file esclusivi
+    std::vector<std::string> only_b = {
+        "exclusive_b_01.txt", "exclusive_b_02.txt", "exclusive_b_03.txt",
+        "exclusive_b_04.txt", "exclusive_b_05.txt", "exclusive_b_06.txt",
+        "exclusive_b_07.txt", "exclusive_b_08.txt", "exclusive_b_09.txt",
+        "exclusive_b_10.txt", "exclusive_b_11.txt", "exclusive_b_12.txt",
+        "exclusive_b_13.txt", "exclusive_b_14.txt", "exclusive_b_15.txt",
+        "only_in_b_1.dat", "only_in_b_2.dat", "only_in_b_3.dat",
+        "only_in_b_4.dat", "only_in_b_5.dat",
+        "release_v1.bak", "release_v2.bak", "release_v3.bak",
+        "final_build.txt", "dist_package.zip",
+    };
+
+    for (const auto &name : common) {
+        std::ofstream("/tmp/A/" + name);
+        std::ofstream("/tmp/B/" + name);
+    }
+    for (const auto &name : only_a) {
+        std::ofstream("/tmp/A/" + name);
+    }
+    for (const auto &name : only_b) {
+        std::ofstream("/tmp/B/" + name);
+    }
+
   
   // Cambia directory nei due pannelli
   panels[0].change_dir("/tmp/A");
@@ -51,7 +116,7 @@ Controller::Controller(View &view)
 panels{{1, 2}}
 {
   init();
- // test();
+  test();
 }
 
 void Controller::init() {           
@@ -233,10 +298,11 @@ void Controller::enter_pressed() {
   if (entry.is_directory()) {
     active_panel.change_dir(entry.get_path());
     if (sync_mode) {
+    comparator.stop();
       inactive_panel.change_dir(inactive_panel.get_current_path() / entry.get_name());
       align_panels();
+      comparator.start(active_panel, inactive_panel);
     }
-    view.draw_panels(sync_mode);
     return;
   }
   // apre il file selezionato sul pannello attivo
@@ -259,7 +325,6 @@ void Controller::go_left() {
   
   if (moved) {
     align_panels();
-    view.draw_panels(sync_mode);
   }
 }
 
@@ -273,7 +338,6 @@ void Controller::go_right() {
   
   if (moved) {
     align_panels();
-    view.draw_panels(sync_mode);
   }
 }
 
@@ -285,7 +349,6 @@ void Controller::go_up() {
   });
   if (changed) {
     align_panels();
-    view.draw_panels(sync_mode);
   }
 }
 
@@ -317,7 +380,6 @@ void Controller::jump_to_file(char ch) {
     if (name[0] == ch) {
       p.set_selected_index(i);
       view.set_offset(p, i);
-      view.draw_panels(sync_mode);
       return;
     }
          }
@@ -326,7 +388,6 @@ void Controller::jump_to_file(char ch) {
            std::string name = p.get_file_at(i).get_name();
            if (name[0] == ch) {
              p.set_selected_index(i);
-             view.draw_panels(sync_mode);
              return;
            }
          }
@@ -346,7 +407,6 @@ void Controller::toggle_tag_file() {
   Panel &p = panels.at(get_active_panel_index());
   p.toggle_tag_current_file();
   p.move_down(1);
-  view.draw_panels(sync_mode);
 }
 
 void Controller::sync_partner(bool sync) {
@@ -376,7 +436,6 @@ void Controller::search_file(const std::string &name) {
       active.set_selected_index(i);
       if (sync_mode)
         inactive.set_selected_index(i);
-      view.draw_panels(sync_mode);
       return;
     }
   }
@@ -394,7 +453,6 @@ void Controller::evaluate_command(const std::string &cmd) {
     for (int i = 0; i < 2; i++)
       panels[i].update_selected_index();
   }
-  view.draw_panels(sync_mode);
 }
 
 void Controller::jump_to_next_different() {
@@ -421,6 +479,7 @@ void Controller::jump_to_next_different() {
 
 void Controller::set_sync(bool sync) {
   if (!sync) {
+    comparator.stop();
     sync_mode = false;
     sync_partner(false);
     return;
@@ -429,7 +488,7 @@ void Controller::set_sync(bool sync) {
   sync_partner(true);
   align_panels();
   sync_index();
-  view.draw_panels(sync_mode);
+  comparator.start(get_active_panel(), get_inactive_panel());
 }
 
 void Controller::sync_index() {
