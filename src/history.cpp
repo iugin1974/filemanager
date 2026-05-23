@@ -52,30 +52,3 @@ HistoryElement& History::last() {
 void History::set_current_file_index(int i) {
         history.at(index).set_selected_index(i);
 }
-
-void History::print(const std::string msg, int logId) const {
-    std::string logPath;
-
-    switch (logId) {
-        case 1:
-            logPath = "/tmp/log1";
-            break;
-        case 2:
-            logPath = "/tmp/log2";
-            break;
-        default:
-            logPath = "/tmp/log"; // fallback opzionale
-            break;
-    }
-
-    std::ofstream log(logPath, std::ios::app);
-
-    log << msg << std::endl;
-
-    for (int i = 0; i < static_cast<int>(history.size()); i++) {
-        log << (i == index ? ">> " : "   ");
-        log << history[i].get_path() << std::endl;
-    }
-
-    log << "---" << std::endl;
-}

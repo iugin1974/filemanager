@@ -14,7 +14,7 @@ FileEntry::FileEntry(const std::filesystem::directory_entry &entry) {
 }
 
 FileEntry::FileEntry(const std::filesystem::path &path)
-    : FileEntry(std::filesystem::directory_entry(path)) {}
+: FileEntry(std::filesystem::directory_entry(path)) {}
 
 bool FileEntry::operator==(const FileEntry &other) const {
   return entry.path() == other.entry.path();
@@ -22,62 +22,62 @@ bool FileEntry::operator==(const FileEntry &other) const {
 
 void FileEntry::print(WINDOW *win, int row, bool selected, int width,
                       bool reverse_line) const {
-  // Prima riempiamo tutta la riga con spazi in reverse se selezionato
-  if (selected && reverse_line) {
-    wattron(win, A_REVERSE);
-    mvwhline(win, row, 0, ' ', width);
-  }
-
-  if (sync_status == SyncStatus::DIR) {
-    wattron(win, COLOR_PAIR(1));
-    wattron(win, A_BOLD);
-  }
-
-  if (sync_status == SyncStatus::NEWER || sync_status == SyncStatus::ONCE) {
-    wattron(win, COLOR_PAIR(2));
-  } else if (sync_status == SyncStatus::OLDER) {
-    wattron(win, COLOR_PAIR(4));
-  }
-
-  if (tagged)
-    mvwprintw(win, row, 0, "*");
-if (sync_status == SyncStatus::SAME) mvwprintw(win, row, 30, "=");
-else if (sync_status == SyncStatus::UNKNOWN) mvwprintw(win, row, 30, "/");
-
-else if (sync_status == SyncStatus::ONCE) mvwprintw(win, row, 30, "on");
-else if (sync_status == SyncStatus::NEWER) mvwprintw(win, row, 30, "nw");
-else if (sync_status == SyncStatus::OLDER) mvwprintw(win, row, 30, "ol");
-
-mvwprintw(win, row, 1, "%s", entry.path().filename().string().c_str());
-
-  wattroff(win, A_REVERSE | A_BOLD);
-  wattroff(win, A_COLOR);
-}
-
-bool FileEntry::is_directory() const { return entry.is_directory(); }
-
-const std::string FileEntry::get_name() const {
-  return entry.path().filename().string();
-}
-
-std::filesystem::path FileEntry::get_path() const { return entry.path(); }
-
-void FileEntry::tag(bool t) { tagged = t; }
-
-void FileEntry::toggle_tag() { tagged = !tagged; }
-
-bool FileEntry::is_tagged() const { return tagged; }
-
-bool FileEntry::is_placeholder() const { return placeholder; }
-
-SyncStatus FileEntry::get_sync_status() const { return sync_status; }
-
-void FileEntry::set_sync_status(SyncStatus s) { sync_status = s; }
-
-const std::filesystem::file_time_type &FileEntry::get_last_write_time() const {
-  return last_write_time;
-}
-
-bool FileEntry::exists() {
-    return std::filesystem::exists(entry.path());
-}
+                        // Prima riempiamo tutta la riga con spazi in reverse se selezionato
+                        if (selected && reverse_line) {
+                          wattron(win, A_REVERSE);
+                          mvwhline(win, row, 0, ' ', width);
+                        }
+                        
+                        if (sync_status == SyncStatus::DIR) {
+                          wattron(win, COLOR_PAIR(1));
+                          wattron(win, A_BOLD);
+                        }
+                        
+                        if (sync_status == SyncStatus::NEWER || sync_status == SyncStatus::ONCE) {
+                          wattron(win, COLOR_PAIR(2));
+                        } else if (sync_status == SyncStatus::OLDER) {
+                          wattron(win, COLOR_PAIR(4));
+                        }
+                        
+                        if (tagged)
+                          mvwprintw(win, row, 0, "*");
+                       // if (sync_status == SyncStatus::SAME) mvwprintw(win, row, 30, "=");
+                       // else if (sync_status == SyncStatus::UNKNOWN) mvwprintw(win, row, 30, "/");
+                       // else if (sync_status == SyncStatus::ONCE) mvwprintw(win, row, 30, "on");
+                       // else if (sync_status == SyncStatus::NEWER) mvwprintw(win, row, 30, "nw");
+                       // else if (sync_status == SyncStatus::OLDER) mvwprintw(win, row, 30, "ol");
+                        
+                        mvwprintw(win, row, 1, "%s", entry.path().filename().string().c_str());
+                        
+                        wattroff(win, A_REVERSE | A_BOLD);
+                        wattroff(win, A_COLOR);
+                      }
+                      
+                      bool FileEntry::is_directory() const { return entry.is_directory(); }
+                      
+                      const std::string FileEntry::get_name() const {
+                        return entry.path().filename().string();
+                      }
+                      
+                      std::filesystem::path FileEntry::get_path() const { return entry.path(); }
+                      
+                      void FileEntry::tag(bool t) { tagged = t; }
+                      
+                      void FileEntry::toggle_tag() { tagged = !tagged; }
+                      
+                      bool FileEntry::is_tagged() const { return tagged; }
+                      
+                      bool FileEntry::is_placeholder() const { return placeholder; }
+                      
+                      SyncStatus FileEntry::get_sync_status() const { return sync_status; }
+                      
+                      void FileEntry::set_sync_status(SyncStatus s) { sync_status = s; }
+                      
+                      const std::filesystem::file_time_type &FileEntry::get_last_write_time() const {
+                        return last_write_time;
+                      }
+                      
+                      bool FileEntry::exists() {
+                        return std::filesystem::exists(entry.path());
+                      }
+                      

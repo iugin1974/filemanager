@@ -10,7 +10,7 @@
 #include <vector>
 
 Panel::Panel(int i) {
-  current_path = std::getenv("HOME");
+  current_path = std::filesystem::current_path();
   history.put_element(HistoryElement(current_path));
   selected_index = 0;
   id = i;
@@ -206,11 +206,9 @@ bool Panel::go_up() {
 
 bool Panel::go_left() {
   if (history.can_go_left()) {
-    history.print("go_left: 1", id);
     const HistoryElement &e = history.move_left();
     current_path = e.get_path();
     selected_index = e.get_selected_index();
-    history.print("go_left: 1", id);
     reload();
     return true;
   }
@@ -219,11 +217,9 @@ bool Panel::go_left() {
 
 bool Panel::go_right() {
   if (history.can_go_right()) {
-    history.print("go_right: 1", id);
     const HistoryElement &e = history.move_right();
     current_path = e.get_path();
     selected_index = e.get_selected_index();
-    history.print("go_right: 2", id);
     reload();
     return true;
   }

@@ -19,9 +19,7 @@ void View::init_panels(Panel *left, Panel *right) {
                                            width / 2, 1);
 }
 
-#include <iostream>
 void View::draw_panels(bool sync_mode) {
-  std::cerr << "draw_panels called" << std::endl;
   for (int i = 0; i < 2; i++) {
     panels[i]->draw(sync_mode);
   }

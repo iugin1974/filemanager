@@ -54,6 +54,9 @@ public:
   // tra i due pannelli.
   void jump_to_next_different();
   
+  // chiama il ridisegno dei pannelli
+  void draw_panels();
+  
 private:
   void test();
   

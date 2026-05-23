@@ -116,7 +116,7 @@ Controller::Controller(View &view)
 panels{{1, 2}}
 {
   init();
-  test();
+  //test();
 }
 
 void Controller::init() {           
@@ -285,6 +285,10 @@ void Controller::exit_status() { exit = true; }
 void Controller::reload_panels() {
   panels[0].reload();
   panels[1].reload();
+}
+
+void Controller::draw_panels() {
+view.draw_panels(sync_mode);  
 }
 
 void Controller::enter_pressed() {

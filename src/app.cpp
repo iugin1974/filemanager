@@ -33,14 +33,20 @@ void App::run() {
   View view;
   Controller controller(view);
 
+  timeout(100);
   int ch;
-  while ((ch = getch())) {
+  while (true) {
     if (resized) {
       resized = false;
       endwin();
       refresh();
       clear();
       controller.on_resize();
+    }
+    ch = getch();
+    if (ch == ERR) {
+     controller.draw_panels();
+     continue;
     }
     bool exit = controller.handle_key(ch);
     if (exit)

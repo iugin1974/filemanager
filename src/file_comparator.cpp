@@ -31,7 +31,6 @@
 #include "file_entry.h"
 #include <fstream>
 #include <vector>
-#include <iostream>
 #include <algorithm>
 
 void FileComparator::start(Panel& a, Panel& b) {
@@ -49,7 +48,6 @@ void FileComparator::stop() {
   //aspetta che il thread si arresti
   if (thread.joinable()) thread.join();
 }
-#include <iostream>
 void FileComparator::compare_all() {
     auto& files_a = panel_a->get_file_list();
     auto& files_b = panel_b->get_file_list();
