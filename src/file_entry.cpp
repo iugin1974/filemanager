@@ -41,8 +41,14 @@ void FileEntry::print(WINDOW *win, int row, bool selected, int width,
 
   if (tagged)
     mvwprintw(win, row, 0, "*");
+if (sync_status == SyncStatus::SAME) mvwprintw(win, row, 30, "=");
+else if (sync_status == SyncStatus::UNKNOWN) mvwprintw(win, row, 30, "/");
 
-  mvwprintw(win, row, 1, "%s", entry.path().filename().string().c_str());
+else if (sync_status == SyncStatus::ONCE) mvwprintw(win, row, 30, "on");
+else if (sync_status == SyncStatus::NEWER) mvwprintw(win, row, 30, "nw");
+else if (sync_status == SyncStatus::OLDER) mvwprintw(win, row, 30, "ol");
+
+mvwprintw(win, row, 1, "%s", entry.path().filename().string().c_str());
 
   wattroff(win, A_REVERSE | A_BOLD);
   wattroff(win, A_COLOR);

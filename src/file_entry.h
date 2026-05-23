@@ -6,11 +6,23 @@
 
 // SAME: stesso nome in entrambi i pannelli, contenuto identico (stessa dimensione + hash uguale)
 // NONE: non confrontabile (placeholder, directory, ecc.)
-enum class SyncStatus { NONE, UNKNOW, SAME, NEWER, OLDER, ONCE, DIR };
+enum class SyncStatus { NONE, UNKNOWN, SAME, NEWER, OLDER, ONCE, DIR };
 
 class FileEntry {
   public:
 
+static inline const char* to_string(SyncStatus s) {
+    switch (s) {
+        case SyncStatus::NONE:   return "NONE";
+        case SyncStatus::UNKNOWN: return "UNKNOWN";
+        case SyncStatus::SAME:   return "SAME";
+        case SyncStatus::NEWER:  return "NEWER";
+        case SyncStatus::OLDER:  return "OLDER";
+        case SyncStatus::ONCE:   return "ONCE";
+        case SyncStatus::DIR:    return "DIR";
+        default:                 return "INVALID";
+    }
+}
     // FileEntry deve essere sempre costruita DOPO che il file esiste sul disco.
 // Non costruire FileEntry su path inesistenti: last_write_time non sarebbe disponibile.
 // Sequenza corretta:
@@ -42,5 +54,5 @@ class FileEntry {
     bool tagged = false;
     bool placeholder = false;
     std::filesystem::file_time_type last_write_time;
-    SyncStatus sync_status = SyncStatus::UNKNOW;
+    SyncStatus sync_status = SyncStatus::UNKNOWN;
 };

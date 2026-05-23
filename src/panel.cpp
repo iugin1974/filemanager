@@ -23,12 +23,10 @@ void Panel::set_sync_partner(Panel *p) {
 }
 
 void Panel::change_dir(const std::filesystem::path &path) {
-  history.print("change_dir: 1", id);
   history.set_current_file_index(selected_index);
   current_path = path;
   selected_index = 0;
   history.put_element(HistoryElement(current_path));
-  history.print("change_dir: 2", id);
   reload();
 }
 

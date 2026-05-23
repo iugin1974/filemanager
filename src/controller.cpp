@@ -151,15 +151,15 @@ int Controller::get_inactive_panel_index() {
   return panels[0].is_active() ? 1 : 0;
 }
 
-Panel &Controller::get_active_panel() {
+Panel& Controller::get_active_panel() {
   return panels[0].is_active() ? panels[0] : panels[1];
 }
 
-const Panel &Controller::get_active_panel() const {
+const Panel& Controller::get_active_panel() const {
   return panels[0].is_active() ? panels[0] : panels[1];
 }
 
-Panel &Controller::get_inactive_panel() {
+Panel& Controller::get_inactive_panel() {
   return panels[0].is_active() ? panels[1] : panels[0];
 }
 
@@ -259,10 +259,15 @@ bool Controller::handle_key(int ch) {
         evaluate_command(cmd);
       break;
     }
-    case '$': {
-      reload_panels();
-      break;
+case '$': {
+    reload_panels();
+    if (sync_mode) {
+        comparator.stop();
+        align_panels();
+        comparator.start(get_active_panel(), get_inactive_panel());
     }
+    break;
+}
     default:
       jump_to_file(ch);
       break;
@@ -449,9 +454,11 @@ void Controller::evaluate_command(const std::string &cmd) {
   for (int i = 0; i < 2; i++)
     panels[i].reload();
   if (sync_mode) {
+    comparator.stop();        // ferma il precedente
     align_panels();
     for (int i = 0; i < 2; i++)
       panels[i].update_selected_index();
+    comparator.start(get_active_panel(), get_inactive_panel());  // riparte
   }
 }
 
@@ -488,7 +495,7 @@ void Controller::set_sync(bool sync) {
   sync_partner(true);
   align_panels();
   sync_index();
-  comparator.start(get_active_panel(), get_inactive_panel());
+//  comparator.start(get_active_panel(), get_inactive_panel());
 }
 
 void Controller::sync_index() {
