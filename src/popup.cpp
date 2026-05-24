@@ -41,6 +41,7 @@ int Popup::show(std::vector<std::string> lines, std::vector<std::string> keys) {
     }
 
     wnoutrefresh(win);
+    doupdate();
 int ch = wgetch(win);
 delwin(win);
 

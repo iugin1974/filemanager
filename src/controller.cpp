@@ -502,6 +502,8 @@ void Controller::set_sync(bool sync) {
 //  comparator.start(get_active_panel(), get_inactive_panel());
 }
 
+void Controller::sort_different(bool sort) {}
+
 void Controller::sync_index() {
   Panel &active = get_active_panel();
   Panel &inactive = get_inactive_panel(); 
@@ -516,27 +518,31 @@ void Controller::align_panels() {
 }
 
 void Controller::delete_file(bool silent) {
+  comparator.stop();
   Panel &active = get_active_panel();
   Panel &inactive = get_inactive_panel();
   auto files = active.get_files_to_operate();
   if (files.empty())
     return;
+  
   DeleteOperation d;
   for (const auto &f : files) {
     FileEntry inactive_file(inactive.get_current_path() / f.get_name());
     bool has_pair = sync_mode && inactive_file.exists();
-
-    // conferma
     if (!silent) {
       bool ok = has_pair ? FileGuard::confirm_delete(f, inactive_file)
                          : FileGuard::confirm_delete(f);
       if (!ok) continue;
     }
-
-    // cancella
     d.execute(f);
     if (has_pair)
       d.execute(inactive_file);
+  }
+  
+  reload_panels();
+  if (sync_mode) {
+    align_panels();
+    comparator.start(get_active_panel(), get_inactive_panel());
   }
 }
 

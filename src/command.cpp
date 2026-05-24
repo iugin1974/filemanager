@@ -20,6 +20,10 @@ void Command::execute(const std::string& cmd) {
         if (args[0] == "on") controller->set_sync(true);
         else if (args[0] == "off") controller->set_sync(false);
     }
+    else if (name == "sort" && args.size() == 1) {
+        if (args[0] == "on") controller->sort_different(true);
+        else if (args[0] == "off") controller->sort_different(false);
+    }
     else if (name == "rm") controller->delete_file(false);
     else if (name == "cp") controller->copy_file();
     else if (name == "mkdir" && args.size() > 0) {

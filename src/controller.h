@@ -18,6 +18,9 @@ public:
   // Attiva/disattiva la modalità sync: i due pannelli si muovono insieme.
   void set_sync(bool);
   
+  // in sync_mode ordina i files diversi in cima alla finestra
+  void sort_different(bool);
+  
   // Elimina il file selezionato (o i file taggati). Se silent=true non chiede conferma.
   void delete_file(bool silent);
   
