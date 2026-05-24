@@ -480,7 +480,7 @@ void Controller::jump_to_next_different() {
   for (int n = 1; n < size; n++) {
     int i = (start + n) % size;
     auto f = active.get_file_at(i);
-    if (f.get_sync_status() != SyncStatus::SAME) {
+    if (f.get_sync_status() == SyncStatus::NEWER || f.get_sync_status() == SyncStatus::OLDER || f.get_sync_status() == SyncStatus::ONCE || f.is_placeholder()) {
       active.set_selected_index(i);
       inactive.set_selected_index(i);
       return;
