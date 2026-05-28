@@ -49,6 +49,7 @@ public:
   const std::vector<FileEntry>& get_tagged_files() const;
   void tag_current_file(bool t);
   void toggle_tag_current_file();
+  void clear_tagged_selection();
   std::vector<FileEntry> get_files_to_operate() const;
   std::mutex& get_mutex();
 

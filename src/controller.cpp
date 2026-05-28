@@ -116,7 +116,7 @@ Controller::Controller(View &view)
 panels{{1, 2}}
 {
   init();
-  //test();
+  test();
 }
 
 void Controller::init() {           
@@ -538,7 +538,7 @@ void Controller::delete_file(bool silent) {
     if (has_pair)
       d.execute(inactive_file);
   }
-  
+  active.clear_tagged_selection();
   reload_panels();
   if (sync_mode) {
     align_panels();
@@ -565,6 +565,7 @@ void Controller::copy_file() {
     if (ok)
       c.execute(source, destination);
   }
+  p1.clear_tagged_selection();
 }
 
 void Controller::sync_file() {

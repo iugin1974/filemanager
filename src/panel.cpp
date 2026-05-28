@@ -239,6 +239,10 @@ int Panel::contains(const std::string &name) const {
   return -1;
 }
 
+void Panel::clear_tagged_selection() {
+  tagged_files.clear();
+}
+
 void Panel::tag_current_file(bool t) {
   // Il chiamante deve assicurarsi che il file corrente non sia un placeholder
   FileEntry &fe = get_current_file();
