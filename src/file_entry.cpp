@@ -78,6 +78,7 @@ void FileEntry::print(WINDOW *win, int row, bool selected, int width,
                       }
                       
                       const bool FileEntry::exists() const {
+                        if (is_placeholder()) return false;
                         return std::filesystem::exists(entry.path());
                       }
                       

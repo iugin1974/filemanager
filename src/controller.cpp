@@ -408,14 +408,19 @@ void Controller::jump_to_file(char ch) {
 }
 
 void Controller::toggle_tag_file() {
-  if (sync_mode) {
+ /* if (sync_mode) {
     CommandBar &c = view.get_command_bar();
     c.print_message("Tagging disabled in sync mode", CommandBar::ERROR);
     return;
+  }*/
+  Panel &p1 = get_active_panel();
+  Panel &p2 = get_inactive_panel();
+  p1.toggle_tag_current_file();
+  p1.move_down(1);
+  if (sync_mode) {
+   p2.toggle_tag_current_file();
+   p2.move_down(1);
   }
-  Panel &p = panels.at(get_active_panel_index());
-  p.toggle_tag_current_file();
-  p.move_down(1);
 }
 
 void Controller::sync_partner(bool sync) {
@@ -518,15 +523,19 @@ void Controller::align_panels() {
 }
 
 void Controller::delete_file(bool silent) {
-  comparator.stop();
   Panel &active = get_active_panel();
   Panel &inactive = get_inactive_panel();
-  auto files = active.get_files_to_operate();
-  if (files.empty())
+  auto files_active = active.get_files_to_operate();
+  auto files_inactive = sync_mode ? inactive.get_files_to_operate() : std::vector<FileEntry>{};
+
+  if (files_active.empty() && files_inactive.empty())
     return;
-  
+
+  comparator.stop();
   DeleteOperation d;
-  for (const auto &f : files) {
+
+  // file nell'attivo
+  for (const auto &f : files_active) {
     FileEntry inactive_file(inactive.get_current_path() / f.get_name());
     bool has_pair = sync_mode && inactive_file.exists();
     if (!silent) {
@@ -538,7 +547,21 @@ void Controller::delete_file(bool silent) {
     if (has_pair)
       d.execute(inactive_file);
   }
+
+  // file solo nell'inattivo (placeholder nell'attivo)
+  for (const auto &f : files_inactive) {
+    FileEntry active_file(active.get_current_path() / f.get_name());
+    if (!active_file.exists()) {
+      if (!silent) {
+        bool ok = FileGuard::confirm_delete(f);
+        if (!ok) continue;
+      }
+      d.execute(f);
+    }
+  }
+
   active.clear_tagged_selection();
+  inactive.clear_tagged_selection();
   reload_panels();
   if (sync_mode) {
     align_panels();
@@ -571,24 +594,38 @@ void Controller::copy_file() {
 void Controller::sync_file() {
   Panel &active = get_active_panel();
   Panel &inactive = get_inactive_panel();
-  FileEntry f1 = active.get_current_file();
-  FileEntry f2 = inactive.get_current_file();
+  auto files_active = active.get_files_to_operate();
+  auto files_inactive = inactive.get_files_to_operate();
+
+  if (files_active.empty() && files_inactive.empty())
+    return;
+
+  comparator.stop();
   CopyOperation c;
-  if (f2.is_placeholder()) {
-    c.execute(f1, FileEntry(inactive.get_current_path() / f1.get_name())); 
+
+  // file nell'attivo → copia nell'inattivo
+  for (const auto &f1 : files_active) {
+    FileEntry f2(inactive.get_current_path() / f1.get_name());
+    if (!f2.exists()) {
+      c.execute(f1, f2);
+    } else if (f1.get_sync_status() == SyncStatus::NEWER) {
+      c.execute(f1, f2);
+    } else if (f1.get_sync_status() == SyncStatus::OLDER) {
+      c.execute(f2, f1);
+    }
+    // SAME → niente da fare
   }
-  else if (f1.is_placeholder()) {
-    c.execute(f2, FileEntry(active.get_current_path() / f2.get_name())); 
+
+  // file solo nell'inattivo (placeholder nell'attivo)
+  for (const auto &f2 : files_inactive) {
+    FileEntry f1(active.get_current_path() / f2.get_name());
+    if (!f1.exists())
+      c.execute(f2, f1);
   }
-  else if (f1.get_sync_status() == SyncStatus::NEWER && f2.get_sync_status() == SyncStatus::OLDER) {
-    c.execute(f1, f2);
-  }
-  else if (f2.get_sync_status() == SyncStatus::NEWER && f1.get_sync_status() == SyncStatus::OLDER) {
-    c.execute(f2, f1);
-  }
-  else return;
+
   reload_panels();
   align_panels();
+  comparator.start(get_active_panel(), get_inactive_panel());
 }
 
 void Controller::touch(const std::string &name) {
