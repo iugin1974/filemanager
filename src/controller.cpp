@@ -116,7 +116,7 @@ Controller::Controller(View &view)
 panels{{1, 2}}
 {
   init();
-  test();
+  //test();
 }
 
 void Controller::init() {           
@@ -622,7 +622,8 @@ void Controller::sync_file() {
     if (!f1.exists())
       c.execute(f2, f1);
   }
-
+active.clear_tagged_selection();
+inactive.clear_tagged_selection();
   reload_panels();
   align_panels();
   comparator.start(get_active_panel(), get_inactive_panel());

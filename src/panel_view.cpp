@@ -55,22 +55,12 @@ Panel *Panel_view::get_panel() const { return panel; }
 
 void Panel_view::draw_border(int w, int h) {
 
-  char ch = '|';
+  chtype ch = ACS_VLINE;
 
-  if (panel->is_active())
-    wattron(win, A_REVERSE);
-
-  if (panel_number == 0) {
-    // solo bordo destro
     for (int y = 0; y < h; y++) {
       mvwaddch(win, y, w - 1, ch);
-    }
-  } else if (panel_number == 1) {
-    // solo bordo sinistro
     for (int y = 0; y < h; y++) {
       mvwaddch(win, y, 0, ch);
-    }
   }
-
-  wattroff(win, A_REVERSE);
+    }
 }
