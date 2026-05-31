@@ -39,4 +39,11 @@ int View::get_height() {
 return height - 3;  
 }
 
+void View::clear_command_bar() {
+ command_bar.clear(); 
+}
+
+
 CommandBar &View::get_command_bar() { return command_bar; }
+
+

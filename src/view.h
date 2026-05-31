@@ -16,6 +16,7 @@ public:
   CommandBar &get_command_bar();
   void set_offset(const Panel &p, int o);
   int get_height();
+  void clear_command_bar();
 
 private:
   std::unique_ptr<Panel_view> panels[2];

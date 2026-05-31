@@ -131,6 +131,7 @@ void Controller::on_resize() {
   view.init_panels(&panels[0], &panels[1]); // ricrea Panel_view
   view.draw_panels(sync_mode);              // ridisegna
 }
+
 // ---------------------------------------------------------------------------
 // Helpers privati
 // ---------------------------------------------------------------------------
@@ -432,12 +433,29 @@ void Controller::sync_partner(bool sync) {
     panels[1].set_sync_partner(nullptr);
   }
 }
+
+void Controller::clear_command_bar() {
+ view.clear_command_bar(); 
+}
 // ---------------------------------------------------------------------------
 // Comandi
 // ---------------------------------------------------------------------------
 
 std::string Controller::get_command(CommandType c) {
   return view.get_command_bar().get_command(c);
+}
+
+void Controller::execute_command(const std::string& cmd) {
+  def_prog_mode();      // salva lo stato del terminale ncurses
+    endwin();             // sospendi ncurses, ripristina terminale normale
+
+    std::system(cmd.c_str());  // qui cat/ls/ecc. scrivono normalmente
+
+    printf("\nPress any key to continue...");
+    getchar();
+
+    reset_prog_mode();    // ripristina lo stato ncurses salvato
+    refresh();            // ridisegna la UI
 }
 
 void Controller::search_file(const std::string &name) {

@@ -36,6 +36,9 @@ public:
   // Sposta il file selezionato (o i file taggati) nel pannello inattivo.
   void move_file();
   
+  // Esegue un comando della shell
+  void execute_command(const std::string &);
+  
   // Cambia la directory corrente
   void change_dir(const std::string &);
   
@@ -59,6 +62,9 @@ public:
   
   // chiama il ridisegno dei pannelli
   void draw_panels();
+  
+  // cancella la command_bar
+  void clear_command_bar();
   
 private:
   void test();
