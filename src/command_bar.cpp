@@ -21,12 +21,11 @@ std::string CommandBar::get_command(const CommandType c) {
 
   std::string input;
 
-  werase(win);
   if (c == CommandType::COMMAND) 
   mvwprintw(win, 0, 0, ":");
   else if (c == CommandType::SEARCH) 
     mvwprintw(win, 0, 0, "/");
-  wnoutrefresh(win);
+  wrefresh(win);
 
   int ch;
   while ((ch = wgetch(win)) != '\n') {
@@ -65,4 +64,4 @@ void CommandBar::print_message(std::string msg, const int message_type) {
   wattroff(win, COLOR_PAIR(9) | A_BOLD);
 }
 
-void CommandBar::clear() { werase(win); }
+void CommandBar::clear() { werase(win); wrefresh(win); }
