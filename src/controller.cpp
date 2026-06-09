@@ -15,6 +15,8 @@
 #include "view.h"
 #include <filesystem>
 #include <unistd.h>
+#include <ranges>
+#include <algorithm>
 
 #define ctrl(x) ((x)&0x1f) // definisce CTRL+H
 
@@ -545,6 +547,38 @@ void Controller::align_panels() {
     return;
   panels[0].align_with(panels[1].get_raw_file_list());
   panels[1].align_with(panels[0].get_raw_file_list());
+}
+
+void Controller::delete_backup_files() {
+  Panel &active = get_active_panel();
+  Panel &inactive = get_inactive_panel();
+
+  auto files_active = active.get_file_list();
+  auto files_inactive = sync_mode ? inactive.get_file_list() : std::vector<FileEntry>{};
+
+
+  bool has_backups = std::ranges::any_of(files_active, &FileEntry::is_backup) ||
+                   std::ranges::any_of(files_inactive, &FileEntry::is_backup);
+
+  if (!has_backups) return;
+comparator.stop();
+DeleteOperation d;
+
+for (const auto &f : files_active) {
+if (f.is_backup()) d.execute(f);
+}
+
+for (const auto &f : files_inactive) {
+if (f.is_backup()) d.execute(f);
+}
+
+  active.clear_tagged_selection();
+  inactive.clear_tagged_selection();
+  reload_panels();
+  if (sync_mode) {
+    align_panels();
+    comparator.start(get_active_panel(), get_inactive_panel());
+  }
 }
 
 void Controller::delete_file(bool silent) {

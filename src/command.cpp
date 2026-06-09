@@ -11,13 +11,13 @@ Command::Command(Controller* c) {
 void Command::execute(const std::string& cmd) {
     auto tokens = parse_command(cmd);
     if (tokens.empty()) return;
-    
+
     std::string name = tokens[0];
     std::vector<std::string> args(tokens.begin() + 1, tokens.end());
-    
+
     if (name == "q") controller->exit_status();
     else if (name.at(0) == '!') {
-     controller->execute_command(name.substr(name.find("!")+1));   
+     controller->execute_command(name.substr(name.find("!")+1));
     }
     else if (name == "sync" && args.size() == 1) {
         if (args[0] == "on") controller->set_sync(true);
@@ -31,13 +31,16 @@ void Command::execute(const std::string& cmd) {
     else if (name == "cp") controller->copy_file();
     else if (name == "mkdir" && args.size() > 0) {
         for (int i = 0; i < static_cast<int>(args.size()); i++) {
-            controller->mkdir(args[i]); 
+            controller->mkdir(args[i]);
         }
     }
     else if (name == "touch" && args.size() > 0) {
                for (int i = 0; i < static_cast<int>(args.size()); i++) {
-            controller->touch(args[i]); 
-        } 
+            controller->touch(args[i]);
+        }
+    }
+    else if (name == "rmbkp" && args.size() == 0) {
+controller->delete_backup_files();
     }
     else if (name == "mv" && args.size() == 0)
         controller->move_file();
@@ -47,7 +50,7 @@ void Command::execute(const std::string& cmd) {
         controller->change_dir(args[0]);
     else if (name == "j")
         controller->jump_to_next_different();
-    
+
     controller->clear_command_bar();
 }
 
@@ -56,14 +59,14 @@ std::vector<std::string> Command::parse_command(const std::string& cmd) {
     std::vector<std::string> tokens;
     std::string current;
     bool in_quotes = false;
-    
+
     for (char c : cmd) {
-        
+
         if (c == '"') {
             in_quotes = !in_quotes;
             continue; // non salvare le virgolette
         }
-        
+
         if (std::isspace(c) && !in_quotes) {
             if (!current.empty()) {
                 tokens.push_back(current);
@@ -74,10 +77,10 @@ std::vector<std::string> Command::parse_command(const std::string& cmd) {
             current += c;
         }
     }
-    
+
     if (!current.empty()) {
         tokens.push_back(current);
     }
-    
+
     return tokens;
 }

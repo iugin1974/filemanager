@@ -49,6 +49,7 @@ static inline const char* to_string(SyncStatus s) {
     void set_sync_status(SyncStatus s);
     SyncStatus get_sync_status() const;
     const bool exists() const;
+    bool is_backup() const;
   private:
     std::filesystem::directory_entry entry;
     bool tagged = false;

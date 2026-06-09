@@ -55,6 +55,10 @@ void FileEntry::print(WINDOW *win, int row, bool selected, int width,
                       
                       bool FileEntry::is_directory() const { return entry.is_directory(); }
                       
+                      bool FileEntry::is_backup() const {
+  return get_name().ends_with('~');
+}
+
                       const std::string FileEntry::get_name() const {
                         return entry.path().filename().string();
                       }

@@ -24,6 +24,9 @@ public:
   // Elimina il file selezionato (o i file taggati). Se silent=true non chiede conferma.
   void delete_file(bool silent);
 
+  // Elimina i files di backup con ~
+  void delete_backup_files();
+
   // Copia il file selezionato (o i file taggati) nel pannello inattivo.
   void copy_file();
 
