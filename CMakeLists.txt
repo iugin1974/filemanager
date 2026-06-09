@@ -29,6 +29,7 @@ set(SOURCES
   src/file_guard.cpp
   src/history_element.cpp
   src/history.cpp
+  src/file_comparator.cpp
 )
 
 add_executable(fm ${SOURCES})

@@ -23,7 +23,7 @@ void Controller::test() {
   // Crea le cartelle
   std::filesystem::create_directories("/tmp/A");
   std::filesystem::create_directories("/tmp/B");
-  
+
   // File in A
   // Nomi comuni (presenti in entrambe le cartelle) — 130 file
     std::vector<std::string> common = {
@@ -97,12 +97,12 @@ void Controller::test() {
         std::ofstream("/tmp/B/" + name);
     }
 
-  
+
   // Cambia directory nei due pannelli
   panels[0].change_dir("/tmp/A");
   panels[1].change_dir("/tmp/B");
   //set_sync(true);
-  
+
   view.draw_panels(sync_mode);
   //align_panels();
   reload_panels();
@@ -119,7 +119,7 @@ panels{{1, 2}}
   //test();
 }
 
-void Controller::init() {           
+void Controller::init() {
   reload_panels();
   panels[0].set_active(true);
   view.init_panels(&panels[0], &panels[1]);
@@ -195,35 +195,35 @@ bool Controller::handle_key(int ch) {
     case KEY_NPAGE:
       move(1, view.get_height());
       break;
-      
+
     case KEY_PPAGE:
       move(-1, view.get_height());
       break;
-      
+
     case KEY_UP:
       move(-1, 1);
       break;
-      
+
     case KEY_DOWN:
       move(1, 1);
       break;
-      
+
     case KEY_LEFT:
       go_left();
       break;
-      
+
     case KEY_RIGHT:
       go_right();
       break;
-      
+
     case KEY_HOME:
       go_first();
       break;
-      
+
     case KEY_END:
       go_last();
       break;
-      
+
     case KEY_ENTER:
     case 10:
     case 13:
@@ -232,7 +232,7 @@ bool Controller::handle_key(int ch) {
     case '-':
       go_up();
       break;
-      
+
     case ctrl('h'): {
       for (int i = 0; i < 2; i++) {
         panels.at(i).show_hidden_files(!panels.at(i).is_showing_hidden());
@@ -246,7 +246,7 @@ bool Controller::handle_key(int ch) {
     case 9: // TAB
       change_active_panel();
       break;
-      
+
     case '/': {
 		std::string str = get_command(CommandType::SEARCH);
 		if (!str.empty())
@@ -267,13 +267,15 @@ case '$': {
         align_panels();
         comparator.start(get_active_panel(), get_inactive_panel());
     }
+      changed = true;
     break;
 }
     default:
+      changed = true;
       jump_to_file(ch);
       break;
   }
-  
+
   view.draw_panels(sync_mode);
   return exit;
 }
@@ -284,12 +286,17 @@ void Controller::exit_status() { exit = true; }
 // ---------------------------------------------------------------------------
 
 void Controller::reload_panels() {
+  if (changed) {
   panels[0].reload();
   panels[1].reload();
+  }
 }
 
 void Controller::draw_panels() {
-view.draw_panels(sync_mode);  
+  if (changed) {
+view.draw_panels(sync_mode);
+changed = false;
+  }
 }
 
 void Controller::enter_pressed() {
@@ -327,12 +334,12 @@ void Controller::enter_pressed() {
 
 void Controller::go_left() {
   bool moved = false;
-  
+
   for_active_panels([&moved](Panel &p, int) {
     bool ok = p.go_left();
     moved = moved || ok;
   });
-  
+
   if (moved) {
     align_panels();
   }
@@ -340,12 +347,12 @@ void Controller::go_left() {
 
 void Controller::go_right() {
   bool moved = false;
-  
+
   for_active_panels([&moved](Panel &p, int) {
     bool ok = p.go_right();
     moved = moved || ok;
   });
-  
+
   if (moved) {
     align_panels();
   }
@@ -393,7 +400,7 @@ void Controller::jump_to_file(char ch) {
       return;
     }
          }
-         
+
          for (int i = 0; i < p.get_selected_index(); i++) {
            std::string name = p.get_file_at(i).get_name();
            if (name[0] == ch) {
@@ -402,7 +409,7 @@ void Controller::jump_to_file(char ch) {
            }
          }
   }; // end lambda
-  
+
   jump(get_active_panel());
   if (sync_mode)
     jump(get_inactive_panel());
@@ -435,7 +442,7 @@ void Controller::sync_partner(bool sync) {
 }
 
 void Controller::clear_command_bar() {
- view.clear_command_bar(); 
+ view.clear_command_bar();
 }
 // ---------------------------------------------------------------------------
 // Comandi
@@ -529,7 +536,7 @@ void Controller::sort_different(bool sort) {}
 
 void Controller::sync_index() {
   Panel &active = get_active_panel();
-  Panel &inactive = get_inactive_panel(); 
+  Panel &inactive = get_inactive_panel();
   inactive.set_selected_index(active.get_selected_index());
 }
 
