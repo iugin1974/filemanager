@@ -40,7 +40,6 @@ void App::run() {
       resized = false;
       endwin();
       refresh();
-      clear();
       controller.on_resize();
     }
     ch = getch();

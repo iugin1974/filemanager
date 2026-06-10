@@ -92,7 +92,7 @@ private:
   const Panel &get_inactive_panel() const;
   Panel &get_inactive_panel();
   void change_active_panel();
-  void jump_to_file(char ch);
+  bool jump_to_file(char ch);
 
   // Esegue fn sul pannello attivo, o su entrambi se sync_mode è attivo.
   template <typename Fn> void for_active_panels(Fn fn);

@@ -21,7 +21,7 @@ void Panel_view::draw(bool sync_mode) {
   if (selected >= offset + height)
     offset = selected - height + 1;
 
-  wclear(win); // pulisce la finestra
+  werase(win); // pulisce la finestra
 
   const auto &files = panel->get_file_list();
   int visible = std::min((int)files.size() - offset, height);
