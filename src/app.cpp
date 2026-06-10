@@ -6,7 +6,7 @@
 
 static volatile sig_atomic_t resized = 0;
 
-void sigwinch_handler(int sig) { resized = 1; }
+void sigwinch_handler(int) { resized = 1; }
 
 void App::run() {
   initscr();            // inizializza ncurses

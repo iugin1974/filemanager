@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_BUILD_TYPE Debug)
 
+
 set(SOURCES
   src/app.cpp
   src/command_bar.cpp
@@ -18,7 +19,6 @@ set(SOURCES
   src/filesystem.cpp
   src/main.cpp
   src/mkdir_operation.cpp
-  src/move_operation.cpp
   src/panel.cpp
   src/panel_view.cpp
   src/popup.cpp
@@ -33,7 +33,11 @@ set(SOURCES
 )
 
 add_executable(fm ${SOURCES})
-
+target_compile_options(fm PRIVATE
+  -Wall
+  -Wextra
+  -Wreturn-type
+)
 find_package(Curses REQUIRED)
 
 target_include_directories(fm PRIVATE

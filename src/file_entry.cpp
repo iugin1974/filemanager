@@ -81,7 +81,7 @@ void FileEntry::print(WINDOW *win, int row, bool selected, int width,
                         return last_write_time;
                       }
                       
-                      const bool FileEntry::exists() const {
+bool FileEntry::exists() const {
                         if (is_placeholder()) return false;
                         return std::filesystem::exists(entry.path());
                       }

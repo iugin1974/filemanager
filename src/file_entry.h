@@ -48,7 +48,7 @@ static inline const char* to_string(SyncStatus s) {
     const std::filesystem::file_time_type& get_last_write_time() const;
     void set_sync_status(SyncStatus s);
     SyncStatus get_sync_status() const;
-    const bool exists() const;
+    bool exists() const;
     bool is_backup() const;
   private:
     std::filesystem::directory_entry entry;
