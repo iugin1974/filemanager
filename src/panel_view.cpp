@@ -36,7 +36,7 @@ for (int i = 0; i < visible; i++) {
   if (panel->get_file_list().size() > 0)
     status_bar.print_message(panel->get_current_path(),
                              panel->get_current_file(), files.size(),
-                             selected + 1);
+                             selected + 1, panel->get_diff_files());
   else
     status_bar.print_message(panel->get_current_path());
 

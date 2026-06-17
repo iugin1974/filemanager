@@ -21,7 +21,7 @@ void StatusBar::print_message(const std::filesystem::path &current_path) {
 
 void StatusBar::print_message(const std::filesystem::path &current_path,
                               const FileEntry &entry, const size_t file_number,
-                              const int index) {
+                              const int index, int diff_files) {
   if (entry.is_placeholder())
     return;
   werase(win);
@@ -62,6 +62,7 @@ void StatusBar::print_message(const std::filesystem::path &current_path,
   std::string right = std::to_string(index) + "/" +
                       std::to_string(static_cast<int>(file_number)) + " - " +
                       size_str + " - " + date_str;
+if (diff_files >= 0) right += " - diff: " + std::to_string(static_cast<int>(diff_files));
   int width = getmaxx(win);
   int right_col = width - static_cast<int>(right.size()) - 1;
   mvwprintw(win, 0, 0, "%s", left.c_str());

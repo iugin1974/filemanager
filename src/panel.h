@@ -28,6 +28,7 @@ public:
   std::filesystem::path get_current_file_fullpath() const;
   Panel* get_aligned_panel();
   int get_selected_index() const;
+int get_diff_files() const;
   void set_selected_index(int i);
   void move_up(int lines);
   void move_down(int lines);
@@ -62,8 +63,10 @@ private:
   std::vector<FileEntry> aligned_file_list;
   std::vector<FileEntry> tagged_files;
   int selected_index = 0;
+  int diff_files = -1;
   bool active = false;
   bool has_sync_partner() const;
+  void reset_diff_files();
   bool show_hidden = false;
   int id;
 };

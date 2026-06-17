@@ -18,9 +18,11 @@ Panel::Panel(int i) {
 
 void Panel::set_sync_partner(Panel *p) {
   sync_partner = p;
-  if (p == nullptr)
+  if (p == nullptr) 
     aligned_file_list.clear();
+reset_diff_files();  
 }
+
 
 void Panel::change_dir(const std::filesystem::path &path) {
   history.set_current_file_index(selected_index);
@@ -28,6 +30,7 @@ void Panel::change_dir(const std::filesystem::path &path) {
   selected_index = 0;
   history.put_element(HistoryElement(current_path));
   reload();
+  reset_diff_files();
 }
 
 const std::vector<FileEntry> &Panel::get_file_list() const {
@@ -44,6 +47,7 @@ std::mutex& Panel::get_mutex() {
 
 void Panel::align_with(std::vector<FileEntry> &other_file_list) {
   aligned_file_list.clear();
+  reset_diff_files();
   size_t i = 0, j = 0;
   while (i < raw_file_list.size() && j < other_file_list.size()) {
     int cmp =
@@ -56,21 +60,25 @@ void Panel::align_with(std::vector<FileEntry> &other_file_list) {
       raw_file_list[i].set_sync_status(SyncStatus::ONCE);
       aligned_file_list.push_back(raw_file_list[i]);
       ++i;
+      diff_files++;
     } else {
       other_file_list[j].set_sync_status(SyncStatus::ONCE);
       aligned_file_list.push_back(FileEntry()); // buco
       ++j;
+      diff_files++;
     }
   }
   // aggiunge i files restanti
   while (i < raw_file_list.size()) {
     raw_file_list[i].set_sync_status(SyncStatus::ONCE);
     aligned_file_list.push_back(raw_file_list[i++]);
+    diff_files++;
   }
   while (j < other_file_list.size()) {
     other_file_list[j].set_sync_status(SyncStatus::ONCE);
     aligned_file_list.push_back(FileEntry());
     j++;
+    diff_files++;
   }
 }
 
@@ -286,3 +294,12 @@ std::vector<FileEntry> Panel::get_files_to_operate() const {
 }
 
 bool Panel::has_sync_partner() const { return sync_partner != nullptr; }
+
+int Panel::get_diff_files() const {
+  return diff_files;
+}
+
+void Panel::reset_diff_files() {
+  if (has_sync_partner()) diff_files = 0;
+  else diff_files = -1; 
+}
