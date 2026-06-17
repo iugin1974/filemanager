@@ -8,7 +8,7 @@ static volatile sig_atomic_t resized = 0;
 
 void sigwinch_handler(int) { resized = 1; }
 
-void App::run() {
+void App::run(bool test) {
   initscr();            // inizializza ncurses
   cbreak();             // input carattere per carattere senza Enter
   noecho();             // non mostrare i tasti premuti
@@ -31,7 +31,7 @@ void App::run() {
   refresh();
 
   View view;
-  Controller controller(view);
+  Controller controller(view, test);
 
   timeout(100);
   int ch;

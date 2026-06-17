@@ -22,6 +22,7 @@ void Command::execute(const std::string& cmd) {
     else if (name == "sync" && args.size() == 1) {
         if (args[0] == "on") controller->set_sync(true);
         else if (args[0] == "off") controller->set_sync(false);
+        else if (args[0] == "all") controller->sync_all();
     }
     else if (name == "sort" && args.size() == 1) {
         if (args[0] == "on") controller->sort_different(true);

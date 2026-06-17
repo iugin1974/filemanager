@@ -4,5 +4,5 @@
 
 class App {
   public:
-    void run();
+    void run(bool); // se true parte in modalità test
 };

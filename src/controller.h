@@ -9,7 +9,7 @@
 // Gestisce l'input dell'utente e coordina Panel e View.
 class Controller {
 public:
-  explicit Controller(View &view);
+  explicit Controller(View &view, bool run_test);
   void init();
   void on_resize();
   // Processa un tasto. Restituisce true se l'utente ha richiesto l'uscita.
@@ -59,6 +59,9 @@ public:
   // altrimenti il file più recente sovrascrive il più vecchio
   void sync_file();
 
+  // sincronizza automaticamente tutta la directory
+  void sync_all();
+  
   // se sync mode è attivo, salta al prossimo file che differisce
   // tra i due pannelli.
   void jump_to_next_different();

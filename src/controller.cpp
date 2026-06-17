@@ -113,12 +113,12 @@ void Controller::test() {
 // ---------------------------------------------------------------------------
 // Costruttore
 // ---------------------------------------------------------------------------
-Controller::Controller(View &view)
+Controller::Controller(View &view, bool run_test)
 : view(view),
 panels{{1, 2}}
 {
-  init();
-  //test();
+   init();
+  if (run_test) test();
 }
 
 void Controller::init() {
@@ -286,8 +286,8 @@ bool Controller::handle_key(int ch) {
     }
     default:
       if(jump_to_file(ch))
-      changed = true;
-      break;
+        changed = true;
+    break;
   }
   
   view.draw_panels(sync_mode);
@@ -549,6 +549,7 @@ void Controller::set_sync(bool sync) {
   //  comparator.start(get_active_panel(), get_inactive_panel());
 }
 
+
 void Controller::sort_different(bool sort) {}
 
 void Controller::sync_index() {
@@ -663,6 +664,34 @@ void Controller::copy_file() {
       c.execute(source, destination);
   }
   p1.clear_tagged_selection();
+}
+
+
+void Controller::sync_all() {
+  if (!sync_mode) return;
+  comparator.stop();
+  Panel &active = get_active_panel();
+  Panel &inactive = get_inactive_panel();
+  auto files_active = active.get_file_list();
+  auto files_inactive = inactive.get_file_list();
+  // se i pannelli sono sincronizzati, get_file_list ritorna aligned_file_list
+  // e le due aligned_file_list hanno la stessa dimensione
+  // quindi basta scorrerne una
+  CopyOperation copy;
+  
+  for (int i = 0; i< static_cast<int>(files_active.size()); i++) {
+    auto f_active = files_active.at(i);
+    auto f_inactive = files_inactive.at(i);
+    
+    if (f_active.get_sync_status() == SyncStatus::NEWER || f_inactive.is_placeholder())
+      copy.execute(f_active, FileEntry(inactive.get_current_path() / f_active.get_name()));
+    else if (f_active.get_sync_status() == SyncStatus::OLDER || f_active.is_placeholder())
+      copy.execute(f_inactive, FileEntry(active.get_current_path() / f_inactive.get_name()));
+    else if (f_active.is_placeholder() && f_inactive.is_placeholder()) continue; 
+  }
+  reload_panels();
+  align_panels();
+  comparator.start(get_active_panel(), get_inactive_panel());
 }
 
 void Controller::sync_file() {

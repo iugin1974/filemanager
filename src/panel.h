@@ -28,7 +28,7 @@ public:
   std::filesystem::path get_current_file_fullpath() const;
   Panel* get_aligned_panel();
   int get_selected_index() const;
-int get_diff_files() const;
+  int get_diff_files() const;
   void set_selected_index(int i);
   void move_up(int lines);
   void move_down(int lines);
@@ -53,7 +53,7 @@ int get_diff_files() const;
   void clear_tagged_selection();
   std::vector<FileEntry> get_files_to_operate() const;
   std::mutex& get_mutex();
-
+  
 private:
   Panel* sync_partner = nullptr;
   std::mutex mutex;
